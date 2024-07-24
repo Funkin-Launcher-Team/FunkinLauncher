@@ -12,6 +12,14 @@ body {
     color: white;
 }
 
+table, th, td {
+    border: 2px solid white;
+    border-collapse: collapse;
+}
+table {
+    width: 95%;
+}
+
 .container {
     margin-left: 5px;
 }

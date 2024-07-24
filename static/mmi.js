@@ -1,5 +1,11 @@
-function receiveUrl(url) {
+function receiveUrl(url, type, id) {
     window.url = url.replace('flmod:', '');
+    fetch("https://gamebanana.com/apiv11/" + type + "/" + id + "/ProfilePage")
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('whereDD').innerHTML = 'Select where to install <b>' + data._sName + '</b>:';
+        })
+        .catch(error => console.error(error));
 }
 
 function installMod() {

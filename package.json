@@ -12,6 +12,7 @@
   "author": "toperri",
   "license": "ISC",
   "devDependencies": {
+    "electron": "^31.2.1",
     "express": "^4.19.2",
     "fs-move": "^6.0.0",
     "progress": "^2.0.3",

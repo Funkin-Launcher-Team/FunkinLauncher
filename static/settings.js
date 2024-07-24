@@ -17,6 +17,13 @@ function done() {
     window.close();
 }
 
+var engineName = ['Kade Engine', 'Psych Engine', 'Vanilla / VSlice'];
+
+fetch("https://ffm-backend.web.app/engines.json")
+.then(response => response.json())
+.then(data => {
+    engineName = data.execName;
+});
 function passData(data) {
     if (data == '') {
         var p = document.createElement('p');
@@ -25,7 +32,6 @@ function passData(data) {
         return;
     }
     var engines = data.split(',');
-    var engineName = ['Kade Engine', 'Psych Engine', 'Vanilla / VSlice'];
     engines.forEach(element => {
         var div = document.getElementsByClassName('installs')[0];
         var adiv = document.createElement('div');
@@ -43,4 +49,12 @@ function passData(data) {
 
         div.appendChild(adiv);
     });
+}
+
+function getFromArray(array, index) {
+    return (array[index] ? array[index] : '');
+}
+
+function showMods(modsHTML) {
+    document.getElementById('mods').innerHTML = modsHTML;
 }

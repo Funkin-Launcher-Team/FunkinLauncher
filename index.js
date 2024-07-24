@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, net, protocol, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents } = require('electron');
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -9,6 +9,18 @@ const express = require('express');
 const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
+
+function isHealthy(url) {
+    var ha = [];
+    request('https://ffm-backend.web.app/sanitize.dsi', (err,res,body) => {
+        var keywords = body.split(',');
+        keywords.foreach((element) => {
+            ha.push(url.includes(element));
+        });
+    });
+
+    return !ha.includes(false);
+}
 
 var launcherWindow = {
     width: 1280,
@@ -77,10 +89,11 @@ if (!gotTheLock) {
             win.focus()
         }
         var url = commandLine.pop();
+        if (!isHealthy(url)) return;
         if (url.startsWith('flmod:')) {
             mmi = new BrowserWindow(mmiWindow);
             mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
-            mmi.webContents.executeJavaScript('receiveUrl("' + url + '");');
+            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", ' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
         }
     })
 }
@@ -90,9 +103,11 @@ function createWindow() {
     var launchLauncher = true;
     process.argv.forEach((val, index) => {
         if (val.startsWith('flmod:')) {
+            var url = val;
             mmi = new BrowserWindow(mmiWindow);
             mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
-            mmi.webContents.executeJavaScript('receiveUrl("' + val + '");');
+            if (!isHealthy(url)) return;
+            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", ' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
             launchLauncher = false;
         }
     });
@@ -110,9 +125,23 @@ function createWindow() {
                 var dest = path.join(__dirname, 'engines', 'engine' + engineID);
                 move(src, dest, err => {
                     if (err) {
+                        win.webContents.executeJavaScript('window.alert("An error occurred while importing the engine. Please try again.");onGameClose();');
                       throw err;
                     }
-                    win.webContents.executeJavaScript('window.alert("Imported engine successfully! Please note that the files were moved, not copied.");onGameClose();');
+                    var elem = "";
+                    fs.readdirSync(dest).forEach((element) => {
+                        if (element.includes('.exe')) {
+                            elem = element;
+                        }
+                    });
+                    
+                    fs.rename(path.join(dest, elem), path.join(dest, execName[engineID] + '.exe'), (err) => {
+                        if (err) {
+                            win.webContents.executeJavaScript('window.alert("An error occurred while renaming the engine. Please try again.");onGameClose();');
+                            throw err;
+                        }
+                        win.webContents.executeJavaScript('window.alert("Imported engine successfully! Please note that the files were moved, not copied.");onGameClose();');
+                    });
                 });
             }
         });
@@ -157,7 +186,16 @@ function createWindow() {
             }
         });
         sw.loadFile(path.join(__dirname, 'static', 'settings.html'));
-        sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');   
+        sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
+        var arrayOfStuff = [];
+        fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
+            arrayOfStuff.push("<h2>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
+            fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
+                if (!element2.includes('.'))
+                    arrayOfStuff.push("<p>" + element2 + "</p>");
+            });
+        });
+        sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");   
     });
     ipcMain.on('load-mm', (event, engineID) => {
         // ENGINEID IS IRRELEVANT FOR MM

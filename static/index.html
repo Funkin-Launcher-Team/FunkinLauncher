@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funkin Launcher</title>
+</head>
+<body>
+    <video autoplay muted loop id="myVideo">
+        <source src="bgv.mp4" type="video/mp4">
+    </video>
+    <div class="container">
+        <div class="top">
+            <img src="./logo.png" alt="" width="100%">
+            <h1>Launcher</h1>
+            <br>
+            <div class="launcher">
+                <p>Select your <b>engine</b>:</p>
+                <select id="enginedd">
+                    
+                </select>
+                <br>
+                <br>
+                <button onclick="loadEngine()" class="btn">Open</button>
+                <br>
+                <br>
+                <button onclick="loadPsychMM()" id="pmm" class="btn" style="display: none;">Load Mod Manager</button>
+            </div>
+            <div class="instance" style="display: none;">
+                <p>There is currently an instance of FNF running.</p>
+                <p><b>Please close it before launching another one.</b></p>
+            </div>
+            <div class="download" style="display: none;">
+                <p>Downloading engine...</p>
+                <p id="progress"></p>
+            </div>
+            <div class="doi" style="display: none;">
+                <p>This engine is not installed. What do you want to do?</p>
+                <button onclick="downloadEngine()" class="btn">Download</button>
+                <br>
+                <br>
+                <button class="btn" onclick="importEngine()">Import my own copy</button>
+                <br>
+                <br>
+                <button onclick="onGameClose()" class="btn">Cancel</button>
+            </div>
+
+        </div>
+        <div class="settings">
+            <button class="settingsBtn" id="settings" onclick="window.electronAPI.settings()">
+                <img src="./settings.svg" alt="" width="30" height="30">
+            </button>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+.container {
+    display: flex;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+}
+
+.settingsBtn {
+    width: 45px;
+    height: 45px;
+    padding: 5px;
+}
+
+.btn {
+    min-width: 110px;
+    height: 25px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: black;
+    font-family: 'Roboto', sans-serif;
+}
+.settings {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+.btn:hover {
+    background-color: rgb(27, 85, 0);
+    color: white;
+    cursor: pointer;
+}
+video {
+    width: 100%;
+    margin-bottom: 20px;
+    height: 100%;
+}
+.top {
+    text-align: center;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    width: 50%;
+    background-color: rgb(37, 30, 39);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+@font-face {
+    font-family: "FNF";
+    src: url("./fnf.ttf");
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: "FNF";
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+}

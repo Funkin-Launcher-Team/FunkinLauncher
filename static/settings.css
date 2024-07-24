@@ -1,0 +1,31 @@
+@font-face {
+    font-family: "FNF";
+    src: url("./fnf.ttf");
+}
+
+body {
+    background-image: url("./stageback.png");
+    margin: 0;
+    margin-left: 10px;
+    font-family: "verdana";
+    padding: 0px;
+    color: white;
+}
+
+.container {
+    margin-left: 5px;
+}
+
+.en {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.install {
+    background-color: black;
+    opacity: 0.8;
+    margin-right: 15px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}

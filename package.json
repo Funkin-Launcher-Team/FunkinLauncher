@@ -4,10 +4,7 @@
   "description": "An AIO engine manager for Friday Night Funkin'",
   "main": "launcher.js",
   "scripts": {
-    "test": "electron .",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "test": "electron ."
   },
   "author": "toperri",
   "license": "ISC",
@@ -20,7 +17,6 @@
     "zip-lib": "^1.0.4"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1",
     "request-progress": "^3.0.0"
   }
 }

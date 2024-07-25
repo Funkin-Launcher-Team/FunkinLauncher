@@ -8,7 +8,8 @@ You'll need Node.js installed.
 
 1) Use ``npm i`` to install all dependencies
 2) Also install Electron with ``npm install electron --save-dev``
-3) The ``bgv.mp4`` file (the animated background) is too heavy for GitHub. Download it by running: ``curl https://ffm-backend.web.app/source-code/bgv.mp4 -o static/bgv.mp4`` (while in the root directory)
+3) <s>The ``bgv.mp4`` file (the animated background) is too heavy for GitHub. Download it by running: ``curl https://ffm-backend.web.app/source-code/bgv.mp4 -o static/bgv.mp4`` (while in the root directory)</s> this issue has been fixed by converting the .mp4 to HLS which splits it in various segments.
+
 4) You can now use ``npm test`` to run the app.
 
 # Building

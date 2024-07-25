@@ -1,13 +1,13 @@
 {
   "name": "funkin-launcher",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "description": "An AIO engine manager for Friday Night Funkin'",
   "main": "launcher.js",
   "scripts": {
     "test": "electron ."
   },
   "author": "toperri",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^31.2.1",
     "express": "^4.19.2",
@@ -17,6 +17,7 @@
     "zip-lib": "^1.0.4"
   },
   "dependencies": {
+    "lite-url": "^1.0.5",
     "request-progress": "^3.0.0"
   }
 }

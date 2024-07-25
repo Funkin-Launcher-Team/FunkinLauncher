@@ -9,4 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   settings: () => ipcRenderer.send('open-settings'),
   installMod: (url, ed) => ipcRenderer.send('install-mod', url, ed),
   importEngine: (engineID) => ipcRenderer.send('import-engine', engineID),
+  reloadLauncher: () => ipcRenderer.send('reload-launcher'),
+  reloadSettings: () => ipcRenderer.send('reload-settings'),
 })

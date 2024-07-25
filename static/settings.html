@@ -18,10 +18,25 @@
         <br>
         <br>
         <h2>Installed mods</h2>
-        <br>
         <div class="mods" id="mods">
 
         </div>
+        <br>
+        <br>
+        <h2>UI Settings</h2>
+        <div class="volume">
+            <span>Music volume: </span>
+            <input type="range" min="0" max="100" value="50" class="slider" id="volSlider">
+            <br>
+            <br>
+            <button onclick="apply()">Apply</button>
+        </div>
+    </div>
+    <div class="areyousure">
+        <p>Are you sure?</p>
+        <button class="usb" onclick="onHellYeah()">Hell yeah</button>
+        <br>
+        <button class="usb" onclick="onNope()">Nope</button>
     </div>
 </body>
 <script src="settings.js"></script>

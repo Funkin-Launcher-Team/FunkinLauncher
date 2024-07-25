@@ -1,26 +1,44 @@
-const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents } = require('electron');
+/*
+ * FNF Launcher
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, 
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software 
+ * is furnished to do so, subject to the following conditions:
+ * 
+ * 1) The software is not republished in any form, modified or unmodified, without the explicit permission of the original author.
+ * 2) The software is not used for any commercial purposes, including but not limited to selling the software, selling services that use the software, or selling the software as part of a service.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ * UNDER NO CIRCUMSTANCES SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * Tool published under the MIT license.
+ * https://gamebanana.com/tools/17526
+*/
+
+
+
+const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell } = require('electron');
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const request = require('request');
 const progress = require('request-progress');
+const URL = require('lite-url');
 const zl = require("zip-lib");
 const express = require('express');
 const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
+const { pathToFileURL } = require('url');
+
+
+var sw;
 
 function isHealthy(url) {
-    var ha = [];
-    request('https://ffm-backend.web.app/sanitize.dsi', (err,res,body) => {
-        var keywords = body.split(',');
-        keywords.foreach((element) => {
-            ha.push(url.includes(element));
-        });
-    });
-
-    return !ha.includes(false);
+    // TODO: sanitize url
+    return true;
 }
+  
 
 var launcherWindow = {
     width: 1280,
@@ -93,7 +111,7 @@ if (!gotTheLock) {
         if (url.startsWith('flmod:')) {
             mmi = new BrowserWindow(mmiWindow);
             mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
-            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", ' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
+            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
         }
     })
 }
@@ -107,7 +125,7 @@ function createWindow() {
             mmi = new BrowserWindow(mmiWindow);
             mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
             if (!isHealthy(url)) return;
-            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", ' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
+            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
             launchLauncher = false;
         }
     });
@@ -115,6 +133,12 @@ function createWindow() {
     if (launchLauncher) {
         win = new BrowserWindow(launcherWindow);
     }
+
+    ipcMain.on('reload-launcher', (event) => {
+        if (win) {
+            win.webContents.executeJavaScript('window.location.reload();');
+        }
+    });
 
     ipcMain.on('import-engine', (event, engineID) => {
         // prompt user to select a folder
@@ -174,7 +198,7 @@ function createWindow() {
             });
     });
     ipcMain.on('open-settings', (event) => {
-        var sw = new BrowserWindow({
+        sw = new BrowserWindow({
             width: 800,
             height: 600,
             resizable: false,
@@ -188,14 +212,41 @@ function createWindow() {
         sw.loadFile(path.join(__dirname, 'static', 'settings.html'));
         sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
         var arrayOfStuff = [];
+
+        // im so sorry for this
         fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
-            arrayOfStuff.push("<h2>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
+            var atLeastOneMod = false;
+            arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
             fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
-                if (!element2.includes('.'))
+                if (fs.lstatSync(path.join(__dirname, 'engines', element, 'mods', element2)).isDirectory()) {
                     arrayOfStuff.push("<p>" + element2 + "</p>");
+                    atLeastOneMod = true;
+                }
             });
+            if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
         });
         sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");   
+    });
+    ipcMain.on('reload-settings', (event) => {
+        if (sw) {
+            sw.webContents.executeJavaScript('window.location.reload();');
+            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
+            var arrayOfStuff = [];
+
+            // im so sorry for this
+            fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
+                var atLeastOneMod = false;
+                arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
+                fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
+                    if (fs.lstatSync(path.join(__dirname, 'engines', element, 'mods', element2)).isDirectory()) {
+                        arrayOfStuff.push("<p>" + element2 + "</p>");
+                        atLeastOneMod = true;
+                    }
+                });
+                if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
+            });
+            sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");  
+        }
     });
     ipcMain.on('load-mm', (event, engineID) => {
         // ENGINEID IS IRRELEVANT FOR MM
@@ -218,7 +269,30 @@ function createWindow() {
     });
 
     if (launchLauncher) {
-        win.loadFile(path.join(__dirname, 'static', 'index.html'));
+        win.loadURL(path.join(__dirname, 'static', 'index.html'));
+        win.webContents.executeJavaScript('versionPass("' + require('./package.json').version + '");');
+        win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
+            if (new URL(details.url).protocol.startsWith('http')) {
+                console.log("remote content requested from: " + new URL(details.url).hostname);
+            }
+            if (new URL(details.url).hostname.includes('gamebanana.com')) {
+                callback({ cancel: false });
+                return;
+            }
+            const allowedURLs = ['ffm-backend.web.app', 'fonts.gstatic.com', 'fonts.googleapis.com'];
+            if (new URL(details.url).protocol == 'file:' || new URL(details.url).protocol == 'devtools:') {
+                callback({ cancel: false });
+                return;
+            }
+
+            if (!allowedURLs.includes(new URL(details.url).hostname)) {
+                console.log('blocked request to ' + new URL(details.url).hostname);
+                
+            }
+            else {
+                callback({ cancel: false });
+            }
+        });
     }
 
     //win.webContents.executeJavaScript('window.alert("' + process.argv.join(',') + '")');
@@ -255,7 +329,32 @@ function downloadEngine(engineID) {
         .pipe(fs.createWriteStream(downloadPath));
 }
 app.whenReady().then(() => {
-    createWindow();
+    request('https://ffm-backend.web.app/version.json', (err, res, body) => {
+        var ver = JSON.parse(body).version;
+        var blist = ['Let\'s update'];
+        if (process.argv.includes('--nfu')) {
+            blist.push('No, thanks');
+        }
+        if (require('./package.json').version != ver) {
+            dialog.showMessageBox({
+                title: 'Update available',
+                message: 'An update is available for FNF Launcher. ' + require('./package.json').version + ' -> ' + ver,
+                buttons: blist
+            }).then((result) => {
+                if (result.response == 0) {
+                    shell.openExternal('https://gamebanana.com/tools/17526');
+                    app.quit(0);
+                }
+                if (result.response == 1) {
+                    console.log('User is a fricking geek cuz he used the funny flags');
+                    createWindow();
+                }
+            });
+        }
+        else {
+            createWindow();
+        }
+    });
 
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();

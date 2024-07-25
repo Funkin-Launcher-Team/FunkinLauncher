@@ -1,23 +1,84 @@
+@font-face {
+    font-family: "FNF";
+    src: url("./fnf.ttf");
+}
+
+@keyframes onOpenLauncher {
+    0% {
+      left: -45%;
+    }
+    100% {
+      left: 0%;
+    }
+}
+
+.update {
+    font-size: 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    font-family: "FNF";
+    display: flex;
+    text-align: center;
+    padding-top: 30vh;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    display: none;
+    background-color: black;
+    opacity: 0;
+    transition: 0.7s opacity;
+}
+.update.open {
+    opacity: 0.8;
+}
+
 .container {
+    animation: 0.9s ease-in-out 0s 1 onOpenLauncher;
     display: flex;
     position: fixed;
     top: 0;
     height: 100vh;
+    transition: left 0.5s;
 }
+
+.container.loaded {
+    left: 0;
+}
+
+
 
 .settingsBtn {
     width: 45px;
     height: 45px;
+    border: none;
+    border-radius: 45px;
     padding: 5px;
+    transition: 0.5s scale;
+}
+.settingsBtn:hover {
+    scale: 1.1;
+    cursor: pointer;
 }
 
 .btn {
     min-width: 110px;
+    font-weight: bold;
     height: 25px;
     font-size: 15px;
-    border-radius: 10px;
+    border-radius: 2px;
     border: black;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'FNF', sans-serif;
+    transition: 0.3s scale;
+}
+.ver {
+    position: fixed;
+    bottom: 0px;
+    color: white;
+    left: 20px;
+    font-size: 10px;
+    font-family: 'Verdana', sans-serif;
 }
 .settings {
     position: fixed;
@@ -25,7 +86,8 @@
     right: 20px;
 }
 .btn:hover {
-    background-color: rgb(27, 85, 0);
+    scale: 1.05;
+    background: linear-gradient(to bottom, rgb(116, 116, 116), rgb(59, 59, 59));
     color: white;
     cursor: pointer;
 }
@@ -42,12 +104,6 @@ video {
     background-color: rgb(37, 30, 39);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
-
-@font-face {
-    font-family: "FNF";
-    src: url("./fnf.ttf");
-}
-
 h1,h2,h3,h4,h5,h6 {
     font-family: "FNF";
 }

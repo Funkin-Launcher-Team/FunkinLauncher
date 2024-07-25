@@ -12,14 +12,34 @@ body {
     color: white;
 }
 
-table, th, td {
-    border: 2px solid white;
-    border-collapse: collapse;
+button.usb {
+    background-color: transparent;
+    font-family: "FNF";
+    color: white;
+    font-size: 20px;
 }
-table {
-    width: 95%;
+.areyousure {
+    font-size: 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    font-family: "FNF";
+    display: flex;
+    text-align: center;
+    padding-top: 20vh;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    display: none;
+    color: white;
+    background-color: black;
+    opacity: 0;
+    transition: 0.7s opacity;
 }
-
+.areyousure.open {
+    opacity: 0.8;
+}
 .container {
     margin-left: 5px;
 }
@@ -33,6 +53,8 @@ table {
     background-color: black;
     opacity: 0.8;
     margin-right: 15px;
+    font-family: "FNF";
+    border-radius: 4px;
     display: flex;
     justify-content: left;
     align-items: center;

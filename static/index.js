@@ -11,8 +11,17 @@ function loadEngine() {
     window.electronAPI.loadGame(selectedOption);
 }
 
+function versionPass(data) {
+    document.getElementById('version').innerText = "v." + data;
+}
+
+function updaterUI() {
+    document.getElementsByClassName('update')[0].style.display = 'block';
+    document.getElementsByClassName('update')[0].classList.add('open');
+}
+
 function loadPsychMM() {
-    bgm.volume = 1;
+    bgm.volume = 0
     document.getElementById('settings').disabled = true;
     window.electronAPI.loadMM(1);
 }
@@ -32,7 +41,7 @@ function onGameLoad() {
 }
 
 function onGameClose() {
-    bgm.volume = 1;
+    bgm.volume = localStorage.getItem('volume');
     document.getElementsByClassName('launcher')[0].style.display = 'block';
     document.getElementsByClassName('instance')[0].style.display = 'none';
     document.getElementsByClassName('doi')[0].style.display = 'none';
@@ -44,7 +53,7 @@ function updateProgress(percent) {
 }
 
 function onDownloadError() {
-    bgm.volume = 1;
+    bgm.volume = localStorage.getItem('volume');
     document.getElementById('settings').disabled = false;
     window.alert('An error occurred while downloading the engine.');
     document.getElementsByClassName('download')[0].style.display = 'none';
@@ -53,7 +62,7 @@ function onDownloadError() {
 }
 
 function onDownloadComplete() {
-    bgm.volume = 1;
+    bgm.volume = localStorage.getItem('volume');
     document.getElementById('settings').disabled = false;
     document.getElementById('progress').innerText = '';
     document.getElementsByClassName('download')[0].style.display = 'none';
@@ -64,7 +73,7 @@ function onDownloadComplete() {
 
 function promptDownload() {
     document.getElementById('settings').disabled = true;
-    bgm.volume = 1;
+    bgm.volume = localStorage.getItem('volume');
     // create option to either import or download
     document.getElementsByClassName('launcher')[0].style.display = 'none';
     document.getElementsByClassName('download')[0].style.display = 'none';
@@ -96,9 +105,13 @@ document.getElementById('enginedd').onchange = function () {
 };
 
 localStorage.setItem('imported', '');
+if (!localStorage.getItem('volume')) {
+    localStorage.setItem('volume', 0.5);
+}
 
 bgm = new Audio('bgm.mp3');
 bgm.loop = true;
+bgm.volume = localStorage.getItem('volume');
 bgm.play();
 
 var version = '0.9';
@@ -127,3 +140,24 @@ fetch("https://ffm-backend.web.app/version.vem?" + Date.now())
             window.alert('A new version of the app is available for download: ' + latestVersion + '. Go check our GameBanana page and download it!');
         }
     });
+
+
+// initialize hls stream
+var video = document.getElementById('bgvE');
+if (Hls.isSupported()) {
+    var hls = new Hls({
+        debug: true,
+    });
+    hls.loadSource('./bgv/bgv.m3u8');
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+        video.muted = true;
+        video.play();
+    });
+}
+else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = './bgv/bgv.m3u8';
+    video.addEventListener('canplay', function () {
+        video.play();
+    });
+}

@@ -21,7 +21,6 @@ const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFram
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const request = require('request');
 const progress = require('request-progress');
 const URL = require('lite-url');
 const zl = require("zip-lib");
@@ -30,6 +29,17 @@ const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
 const { pathToFileURL } = require('url');
+
+function request(url, callback) {
+    const allowedURLs = ['ffm-backend.web.app', 'fonts.gstatic.com', 'fonts.googleapis.com', 'gamebanana.com', 'mmdl.gamebanana.com',''];
+    console.log("remote content requested from: " + new URL(url).hostname);
+    if (allowedURLs.includes(new URL(url).hostname) || new URL(url).hostname.includes('gamebanana.com')) {
+        return require('request')(url, callback);
+    }
+    else {
+        callback("not allowed","","not allowed");
+    }
+}
 
 
 var sw;
@@ -199,33 +209,37 @@ function createWindow() {
     });
     ipcMain.on('open-settings', (event) => {
         sw = new BrowserWindow({
+            parent: win,
+            modal: true,
             width: 800,
             height: 600,
             resizable: false,
             fullscreenable: false,
             minimizable: false,
             webPreferences: {
-                nodeIntegration: true,
+            nodeIntegration: true,
                 preload: path.join(__dirname, 'ipc.js')
             }
         });
         sw.loadFile(path.join(__dirname, 'static', 'settings.html'));
-        sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
         var arrayOfStuff = [];
+        sw.webContents.on('did-finish-load', () => {
+            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
 
-        // im so sorry for this
-        fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
-            var atLeastOneMod = false;
-            arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
-            fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
-                if (fs.lstatSync(path.join(__dirname, 'engines', element, 'mods', element2)).isDirectory()) {
-                    arrayOfStuff.push("<p>" + element2 + "</p>");
-                    atLeastOneMod = true;
-                }
+            // im so sorry for this bulky ass code
+            fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
+                var atLeastOneMod = false;
+                arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
+                fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
+                    if (fs.lstatSync(path.join(__dirname, 'engines', element, 'mods', element2)).isDirectory()) {
+                        arrayOfStuff.push("<p>" + element2 + "</p>");
+                        atLeastOneMod = true;
+                    }
+                });
+                if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
             });
-            if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
-        });
-        sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");   
+            sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");  
+        }); 
     });
     ipcMain.on('reload-settings', (event) => {
         if (sw) {

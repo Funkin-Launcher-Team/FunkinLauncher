@@ -27,10 +27,7 @@ function btngen(element, div) {
 
 function done() {
     window.alert('The engine has been removed successfully.');
-    window.electronAPI.settings();
-    window.close();
-    //that doesnt work, lol
-    //window.electronAPI.reloadSettings();
+    window.location.reload();
 }
 
 var engineName = ['Kade Engine', 'Psych Engine', 'Vanilla / VSlice'];

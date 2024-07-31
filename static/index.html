@@ -37,7 +37,7 @@
             </div>
             <div class="download" style="display: none;">
                 <p>Downloading engine...</p>
-                <p id="progress"></p>
+                <progress id="progress" value="0" max="100"></progress>
             </div>
             <div class="doi" style="display: none;">
                 <p>This engine is not installed. What do you want to do?</p>
@@ -53,14 +53,20 @@
         </div>
         <div class="settings">
             <button class="settingsBtn" id="settings" onclick="window.electronAPI.settings()">
-                <img src="./settings.svg" alt="" width="30" height="30">
+                <img src="./settings.svg" alt="" width="30" height="30" id="settingsBtnImg">
             </button>
         </div>
         <div class="ver">
             <p id="version"></p>
         </div>
-        <div class="update">
-            <h1 style="color: white;">Updating...</h1>
+        <div class="license">
+            <h1 style="color: white;">License</h1>
+            <div class="licenseContents">
+                <p>HLS.js - Copyright video-dev - All Rights Reserved</p>
+                <p>Friday Night Funkin Assets - Copyright The Funkin Crew - All Rights Reserved</p>
+                <p>This software is licensed under the MIT License.</p>
+            </div>
+            <button onclick="olicense()">Back</button>
         </div>
     </div>
     <script src="index.js"></script>

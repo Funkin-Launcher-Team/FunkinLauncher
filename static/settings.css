@@ -9,6 +9,7 @@ body {
     margin-left: 10px;
     font-family: "verdana";
     padding: 0px;
+    overflow-x: hidden;
     color: white;
 }
 
@@ -18,6 +19,38 @@ button.usb {
     color: white;
     font-size: 20px;
 }
+
+button {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    font-family: "Verdana";
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    padding: 6px;
+    transition: scale 0.5s, transform 0.5s;
+}
+
+button:hover {
+    cursor: pointer;
+    scale: 1.1;
+    transform: rotate(2deg);
+}
+
+button:active {
+    scale: 1.3;
+}
+
+@keyframes areYouSureTransition {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
+
 .areyousure {
     font-size: 30px;
     position: fixed;
@@ -34,12 +67,11 @@ button.usb {
     display: none;
     color: white;
     background-color: black;
-    opacity: 0;
-    transition: 0.7s opacity;
-}
-.areyousure.open {
+    animation-direction: normal;
     opacity: 0.8;
+    animation: areYouSureTransition 0.8s ease-in-out;
 }
+
 .container {
     margin-left: 5px;
 }
@@ -49,13 +81,38 @@ button.usb {
     margin-right: 10px;
 }
 
+.erb {
+    width: 25px;
+    border-radius: 25px;
+    border: none;
+    background-color: red;
+    color: white;
+    font-family: "FNF";
+}
+
 .install {
     background-color: black;
     opacity: 0.8;
     margin-right: 15px;
+    padding-right: 15px;
     font-family: "FNF";
     border-radius: 4px;
     display: flex;
-    justify-content: left;
+    justify-content: space-between;
     align-items: center;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 20px;
+}
+  
+/* Track */
+::-webkit-scrollbar-track {
+    background: #161116;
+}
+  
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #6f5872;
 }

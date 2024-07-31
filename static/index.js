@@ -1,6 +1,10 @@
+console.log = function (...args) {
+    window.electronAPI.log(args.join(' '));
+}
+
 var bgm;
 
-var isGameCloseEventGonnaFireAndTalkAbotuImportedEngine = false;
+// var isGameCloseEventGonnaFireAndTalkAbotuImportedEngine = false;
 
 function loadEngine() {
     var dropdown = document.getElementById('enginedd');
@@ -12,12 +16,18 @@ function loadEngine() {
 }
 
 function versionPass(data) {
-    document.getElementById('version').innerText = "v." + data;
+    document.getElementById('version').innerText = "v." + data + ' - ';
+    document.getElementById('version').innerHTML += '<a href="javascript:license()">License</a>';
 }
 
-function updaterUI() {
-    document.getElementsByClassName('update')[0].style.display = 'block';
-    document.getElementsByClassName('update')[0].classList.add('open');
+function license() {
+    document.getElementsByClassName('license')[0].style.display = 'block';
+    document.getElementsByClassName('license')[0].classList.add('open');
+}
+
+function olicense() {
+    document.getElementsByClassName('license')[0].style.display = 'none';
+    document.getElementsByClassName('license')[0].classList.remove('open');
 }
 
 function loadPsychMM() {
@@ -49,7 +59,7 @@ function onGameClose() {
 }
 
 function updateProgress(percent) {
-    document.getElementById('progress').innerText = percent;
+    document.getElementById('progress').value = percent;
 }
 
 function onDownloadError() {
@@ -93,6 +103,18 @@ function importEngine() {
     window.electronAPI.importEngine(document.getElementById('enginedd').value);
 }
 
+fetch("https://ffm-backend.web.app/engines.json")
+    .then(response => response.json())
+    .then(data => {
+        var dropdown = document.getElementById('enginedd');
+        data.engines.forEach(engine => {
+            var option = document.createElement('option');
+            option.text = engine.name;
+            option.value = engine.id;
+            dropdown.add(option);
+        });
+    });
+
 document.getElementById('enginedd').onchange = function () {
     var dropdown = document.getElementById('enginedd');
     var selectedOption = dropdown.value;
@@ -114,35 +136,8 @@ bgm.loop = true;
 bgm.volume = localStorage.getItem('volume');
 bgm.play();
 
-var version = '0.9';
-
-fetch("https://ffm-backend.web.app/engines.json")
-    .then(response => response.json())
-    .then(data => {
-        var dropdown = document.getElementById('enginedd');
-        data.engines.forEach(engine => {
-            var option = document.createElement('option');
-            option.text = engine.name;
-            option.value = engine.id;
-            dropdown.add(option);
-        });
-    });
-console.clear();
-console.warn('This is a developer console. If you were told to paste something here, don\'t! They could get access to your computer and do bad shit!');
-
-fetch("https://ffm-backend.web.app/version.vem?" + Date.now())
-    .then(r => r.text())
-    .then(latestVersion => {
-        var versionInt = parseInt(version.replace('.',''));
-        var latestVersionInt = parseInt(version.replace('.',''));
-
-        if (latestVersionInt > versionInt) {
-            window.alert('A new version of the app is available for download: ' + latestVersion + '. Go check our GameBanana page and download it!');
-        }
-    });
-
-
 // initialize hls stream
+// copied this thing from the demo web lol
 var video = document.getElementById('bgvE');
 if (Hls.isSupported()) {
     var hls = new Hls({
@@ -156,8 +151,15 @@ if (Hls.isSupported()) {
     });
 }
 else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    // this wont happen... right???
     video.src = './bgv/bgv.m3u8';
     video.addEventListener('canplay', function () {
         video.play();
     });
 }
+
+var deg = 0;
+setInterval(function() {
+    deg += 0.1;
+    document.getElementById('settingsBtnImg').style.transform = 'rotate(' + deg + 'deg)';
+},1/60);

@@ -1,5 +1,10 @@
+console.log = function (...args) {
+    window.electronAPI.log(args.join(' '));
+}
+
 function receiveUrl(url, type, id) {
-    window.url = url.replace('flmod:', '');
+    window.url = url.replace('flmod://', '');
+    window.subID = id;
     fetch("https://gamebanana.com/apiv11/" + type + "/" + id + "/ProfilePage")
         .then(response => response.json())
         .then(data => {
@@ -9,6 +14,10 @@ function receiveUrl(url, type, id) {
 }
 
 function installMod() {
+    // todo: find smth to check for mod updates
+    var ma = localStorage.getItem('installedMods');
+    ma.push(window.subID);
+    localStorage.setItem('installedMods',ma);
     var dropdown = document.getElementById('enginedd');
     var selectedOption = dropdown.value;
 
@@ -43,8 +52,9 @@ fetch("https://ffm-backend.web.app/engines.json")
         });
     });
     
-console.clear();
-console.warn('This is a developer console. If you were told to paste something here, don\'t! They could get access to your computer and do bad shit!');
+if (localStorage.getItem('installedMods') == null || localStorage.getItem('installedMods') == undefined) {
+    localStorage.setItem('installedMods',[]);
+}
 
 // initialize hls stream
 var video = document.getElementById('bgvE');

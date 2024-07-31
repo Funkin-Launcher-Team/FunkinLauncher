@@ -33,13 +33,22 @@
         </div>
         <br>
         <br>
+        <h2>Miscellaneous settings</h2>
+        <button onclick="window.electronAPI.openEngineFolder()">Open "engines" folder</button>
+        <br>
+        <br>
+        <button onclick="window.electronAPI.openLogsFolder()">Open "logs" folder (for debug purposes)</button>
+        <br>
+        <br>
     </div>
     <div class="areyousure">
-        <p>Are you sure?</p>
+        <p>Delete this engine?</p>
+        <p style="font-size: 15px; font-family: Arial;">You cannot undo this operation!</p>
         <button class="usb" onclick="onHellYeah()">Hell yeah</button>
         <br>
         <button class="usb" onclick="onNope()">Nope</button>
     </div>
 </body>
+<script src="js/camerawork.js"></script>
 <script src="settings.js"></script>
 </html>

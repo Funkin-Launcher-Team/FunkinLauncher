@@ -1,4 +1,5 @@
 node_modules/
-static/bgv.mp4
+static/js/camerawork.js
 engines/
 downloads/
+out/

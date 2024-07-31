@@ -8,10 +8,14 @@ You'll need Node.js installed.
 
 1) Use ``npm i`` to install all dependencies
 2) Also install Electron with ``npm install electron --save-dev``
-3) <s>The ``bgv.mp4`` file (the animated background) is too heavy for GitHub. Download it by running: ``curl https://ffm-backend.web.app/source-code/bgv.mp4 -o static/bgv.mp4`` (while in the root directory)</s> this issue has been fixed by converting the .mp4 to HLS which splits it in various segments.
+3) Use ``curl https://raw.githubusercontent.com/toperri/camerawork/main/camerawork.js -o static/js/camerawork.js`` to download the latest version of camerawork (NOTICE: camerawork is hosted under another license!)
 
 4) You can now use ``npm test`` to run the app.
 
 # Building
 
 Feel free to use electron-forge or electron-builder to build Funkin Launcher. I instead downloaded Electron prebuilts from their GitHub and edited the .exe's icon.
+
+# License
+
+MIT

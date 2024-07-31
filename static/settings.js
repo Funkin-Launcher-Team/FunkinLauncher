@@ -1,8 +1,12 @@
+console.log = function (...args) {
+    window.electronAPI.log(args.join(' '));
+}
+
 var onHellYeah = function(){};
 var onNope = function(){};
 function btngen(element, div) {
     var btn = document.createElement('button');
-    btn.innerText = 'Remove';
+    btn.innerHTML = '<b>X</b>';
     btn.className = 'erb';
     btn.onclick = function() {
         /*
@@ -12,14 +16,14 @@ function btngen(element, div) {
         }
             */
         document.getElementsByClassName('areyousure')[0].style.display = 'block';
-        document.getElementsByClassName('areyousure')[0].classList.add('open');
         onHellYeah = function() {
             window.electronAPI.removeEngine(element);
             done();
+            onHellYeah = function(){};
         }
         onNope = function() {
             document.getElementsByClassName('areyousure')[0].style.display = 'none';
-            document.getElementsByClassName('areyousure')[0].classList.remove('open');
+            onNope = function(){};
         }
     }
     div.appendChild(btn);
@@ -88,3 +92,31 @@ function apply() {
     localStorage.setItem('volume', document.getElementById('volSlider').value / 100);
     window.electronAPI.reloadLauncher();
 }
+
+
+/*
+
+var fps = 0;
+var frames = 0;
+var startTime = performance.now();
+
+function calculateFPS() {
+    var currentTime = performance.now();
+    var elapsedTime = currentTime - startTime;
+    
+    if (elapsedTime >= 1000) {
+        fps = frames / (elapsedTime / 1000);
+        frames = 0;
+        startTime = currentTime;
+    }
+    
+    frames++;
+
+    console.log(fps);
+}
+
+setInterval(calculateFPS, 1000);
+
+*/
+
+window.camera.init(125,70);

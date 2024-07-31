@@ -1,0 +1,19 @@
+Added 1-Click Mod Downloading (tysm tom!)
+Added streamed video instead of big video file (Background Video)
+Fixed update checking
+Enhanced UI and settings menu
+Added possibility to modify background music volume
+New background music original track (credits to thomicfee)
+Fixed importing of engines.
+Modified licensing
+Miscellaneous bug fixes
+Fixed a bug where the user was able to delete an engine while it was running
+Added mod list to settings
+
+
+------------
+
+
+This is one of the biggest updates of the app because there's 1-click mod downloading (the purpose of this... lol).
+
+Please keep in mind that all of the mods you've ever installed are logged and kept ONLY on your machine. I plan to make an embedded mod updater in v.1.5, and I'd like to already have a local database to base it on so I don't have to write migration code or whatever.

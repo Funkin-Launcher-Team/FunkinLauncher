@@ -1,1 +1,1 @@
-var app = require('./index')
+var app = require('./index');

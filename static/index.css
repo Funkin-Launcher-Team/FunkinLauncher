@@ -3,6 +3,10 @@
     src: url("./fnf.ttf");
 }
 
+a {
+    color: white;
+}
+
 @keyframes onOpenLauncher {
     0% {
       left: -45%;
@@ -12,7 +16,7 @@
     }
 }
 
-.update {
+.license {
     font-size: 30px;
     position: fixed;
     top: 0;
@@ -30,8 +34,13 @@
     opacity: 0;
     transition: 0.7s opacity;
 }
-.update.open {
+.license.open {
     opacity: 0.8;
+}
+.licenseContents {
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 15px;
 }
 
 .container {
@@ -47,14 +56,14 @@
     left: 0;
 }
 
-
-
 .settingsBtn {
     width: 45px;
     height: 45px;
     border: none;
     border-radius: 45px;
+    border: 2px solid black;
     padding: 5px;
+    padding-top: 6px;
     transition: 0.5s scale;
 }
 .settingsBtn:hover {

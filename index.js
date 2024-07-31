@@ -30,6 +30,32 @@ const move = require('fs-move');
 const { title } = require('process');
 const { pathToFileURL } = require('url');
 
+var appDataPath = app.getPath('userData');
+
+// Create database if not existing
+if (!fs.existsSync(path.join(__dirname, 'dbfile'))) {
+    fs.writeFileSync(path.join(__dirname, 'dbfile'), '');
+}
+
+function dbWriteValue(key, value) {
+    fs.appendFileSync(path.join(__dirname, 'dbfile'), btoa(key + '=' + value) + '\n');
+}
+
+function dbReadValue(key) {
+    var data = fs.readFileSync(path.join(__dirname, 'dbfile'), 'utf8');
+    var lines = data.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (line.startsWith(btoa(key))) {
+            var value = line.split('=')[1];
+            return value;
+        }
+    }
+    return null;
+}
+
+var mmi;
+
 function request(url, callback) {
     const allowedURLs = ['ffm-backend.web.app', 'fonts.gstatic.com', 'fonts.googleapis.com', 'gamebanana.com', 'mmdl.gamebanana.com',''];
     console.log("remote content requested from: " + new URL(url).hostname);
@@ -48,7 +74,24 @@ function isHealthy(url) {
     // TODO: sanitize url
     return true;
 }
+
+function formattedDate() {
+    var date = new Date(Date.now());
+    return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getHours() + '-' + date.getMinutes() + '-logs';
+}
   
+// log to file
+process.stdout.write('NOTICE: the logs are stored in ' + path.join(appDataPath, 'logs') + '\n');
+if (!fs.existsSync(path.join(appDataPath, 'logs'))) {
+    fs.mkdirSync(path.join(appDataPath, 'logs'), { recursive: true });
+}
+
+var logStream = fs.createWriteStream(path.join(appDataPath, 'logs', formattedDate() + '.log'), { flags: 'w' });
+
+console.log = function (d) {
+    logStream.write('(MAIN PROCESS) ' + d + '\n');
+};
+
 
 var launcherWindow = {
     width: 1280,
@@ -59,7 +102,7 @@ var launcherWindow = {
     titleBarOverlay: {
         color: 'rgba(0,0,0,0)',
         symbolColor: '#000000',
-        height: 10
+        height: 50
     },
     webPreferences: {
         nodeIntegration: true,
@@ -94,8 +137,8 @@ request('https://ffm-backend.web.app/engines.json', (err, res, body) => {
     var json = JSON.parse(body);
     execName = json.execName;
 });
-if (!fs.existsSync(path.join(__dirname, 'engines'))) {
-    fs.mkdirSync(path.join(__dirname, 'engines'), { recursive: true });
+if (!fs.existsSync(path.join(appDataPath, 'engines'))) {
+    fs.mkdirSync(path.join(appDataPath, 'engines'), { recursive: true });
 }
 if (process.defaultApp) {
     if (process.argv.length >= 2) {
@@ -118,10 +161,12 @@ if (!gotTheLock) {
         }
         var url = commandLine.pop();
         if (!isHealthy(url)) return;
-        if (url.startsWith('flmod:')) {
+        if (url.startsWith('flmod://')) {
             mmi = new BrowserWindow(mmiWindow);
             mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
-            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
+            mmi.webContents.on('did-finish-load', () => {
+                mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
+            });
         }
     })
 }
@@ -130,12 +175,14 @@ if (!gotTheLock) {
 function createWindow() {
     var launchLauncher = true;
     process.argv.forEach((val, index) => {
-        if (val.startsWith('flmod:')) {
+        if (val.startsWith('flmod://')) {
             var url = val;
             mmi = new BrowserWindow(mmiWindow);
             mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
             if (!isHealthy(url)) return;
-            mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
+            mmi.webContents.on('did-finish-load', () => {
+                mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
+            });
             launchLauncher = false;
         }
     });
@@ -143,6 +190,10 @@ function createWindow() {
     if (launchLauncher) {
         win = new BrowserWindow(launcherWindow);
     }
+
+    ipcMain.on('log', (event, message) => {
+        logStream.write('(RENDERER PROCESS) ' + message + '\n');
+    });
 
     ipcMain.on('reload-launcher', (event) => {
         if (win) {
@@ -156,27 +207,7 @@ function createWindow() {
         dialog.showOpenDialog(win, { properties: ['openDirectory'] }).then((result) => {
             if (!result.canceled) {
                 var src = result.filePaths[0];
-                var dest = path.join(__dirname, 'engines', 'engine' + engineID);
-                move(src, dest, err => {
-                    if (err) {
-                        win.webContents.executeJavaScript('window.alert("An error occurred while importing the engine. Please try again.");onGameClose();');
-                      throw err;
-                    }
-                    var elem = "";
-                    fs.readdirSync(dest).forEach((element) => {
-                        if (element.includes('.exe')) {
-                            elem = element;
-                        }
-                    });
-                    
-                    fs.rename(path.join(dest, elem), path.join(dest, execName[engineID] + '.exe'), (err) => {
-                        if (err) {
-                            win.webContents.executeJavaScript('window.alert("An error occurred while renaming the engine. Please try again.");onGameClose();');
-                            throw err;
-                        }
-                        win.webContents.executeJavaScript('window.alert("Imported engine successfully! Please note that the files were moved, not copied.");onGameClose();');
-                    });
-                });
+                dbWriteValue('engine' + engineID, src);
             }
         });
     });
@@ -184,20 +215,23 @@ function createWindow() {
         downloadEngine(engineID);
     });
     ipcMain.on('open-engine-folder', (event) => {
-        exec('explorer.exe ' + path.join(__dirname, 'engines'), (err, stdout, stderr) => {});
+        exec('explorer.exe ' + path.join(appDataPath, 'engines'), (err, stdout, stderr) => {});
+    });
+    ipcMain.on('open-logs-folder', (event) => {
+        exec('explorer.exe ' + path.join(appDataPath, 'logs'), (err, stdout, stderr) => {});
     });
     ipcMain.on('remove-engine', (event, engineID) => {
-        fs.rmSync(path.join(__dirname, 'engines', 'engine' + engineID), { recursive: true });
+        fs.rmSync(dbReadValue('engine' + engineID), { recursive: true });
     });
     ipcMain.on('load-game', (event, engineID) => {
         win.webContents.executeJavaScript('onGameLoad();');
-        var gamePath = __dirname + "\\engines\\engine" + engineID + "\\" + execName[engineID] + ".exe";
+        var gamePath = appDataPath + "\\engines\\engine" + engineID + "\\" + execName[engineID] + ".exe";
         if (!fs.existsSync(gamePath)) {
             win.webContents.executeJavaScript('promptDownload();');
             return;
         }
 
-            exec('start ' + execName[engineID], { cwd: path.join(__dirname, 'engines', 'engine' + engineID) }, (err, stdout, stderr) => {
+            exec('start ' + execName[engineID], { cwd: ath.join(appDataPath, 'engines', 'engine' + engineID) }, (err, stdout, stderr) => {
                 if (err) {
                     console.error(err);
                     win.webContents.executeJavaScript('onUnexpectedGameClose();');
@@ -222,16 +256,16 @@ function createWindow() {
             }
         });
         sw.loadFile(path.join(__dirname, 'static', 'settings.html'));
-        var arrayOfStuff = [];
         sw.webContents.on('did-finish-load', () => {
-            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
+            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(appDataPath, 'engines')).join(',') + '");');
 
+            var arrayOfStuff = [];
             // im so sorry for this bulky ass code
-            fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
+            fs.readdirSync(path.join(appDataPath, 'engines')).forEach((element) => {
                 var atLeastOneMod = false;
                 arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
-                fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
-                    if (fs.lstatSync(path.join(__dirname, 'engines', element, 'mods', element2)).isDirectory()) {
+                fs.readdirSync(path.join(appDataPath, 'engines', element, 'mods')).forEach((element2) => {
+                    if (fs.lstatSync(path.join(appDataPath, 'engines', element, 'mods', element2)).isDirectory()) {
                         arrayOfStuff.push("<p>" + element2 + "</p>");
                         atLeastOneMod = true;
                     }
@@ -244,15 +278,15 @@ function createWindow() {
     ipcMain.on('reload-settings', (event) => {
         if (sw) {
             sw.webContents.executeJavaScript('window.location.reload();');
-            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(__dirname, 'engines')).join(',') + '");');
+            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(appDataPath, 'engines')).join(',') + '");');
             var arrayOfStuff = [];
 
             // im so sorry for this
-            fs.readdirSync(path.join(__dirname, 'engines')).forEach((element) => {
+            fs.readdirSync(path.join(appDataPath, 'engines')).forEach((element) => {
                 var atLeastOneMod = false;
                 arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('script','').replace('engine',''))] + "</h2>");
-                fs.readdirSync(path.join(__dirname, 'engines', element, 'mods')).forEach((element2) => {
-                    if (fs.lstatSync(path.join(__dirname, 'engines', element, 'mods', element2)).isDirectory()) {
+                fs.readdirSync(path.join(appDataPath, 'engines', element, 'mods')).forEach((element2) => {
+                    if (fs.lstatSync(path.join(appDataPath, 'engines', element, 'mods', element2)).isDirectory()) {
                         arrayOfStuff.push("<p>" + element2 + "</p>");
                         atLeastOneMod = true;
                     }
@@ -265,13 +299,13 @@ function createWindow() {
     ipcMain.on('load-mm', (event, engineID) => {
         // ENGINEID IS IRRELEVANT FOR MM
         win.webContents.executeJavaScript('onGameLoad();');
-        var gamePath = __dirname + "\\engines\\engine1\\PsychEngine.exe";
+        var gamePath = appDataPath + "\\engines\\engine1\\PsychEngine.exe";
         if (!fs.existsSync(gamePath)) {
             win.webContents.executeJavaScript('promptDownload();');
             return;
         }
 
-            exec('' + execName[engineID] + ' -mm', { cwd: path.join(__dirname, 'engines', 'engine' + engineID) }, (err, stdout, stderr) => {
+            exec('' + execName[engineID] + ' -mm', { cwd: path.join(appDataPath, 'engines', 'engine' + engineID) }, (err, stdout, stderr) => {
                 if (err) {
                     console.error(err);
                     win.webContents.executeJavaScript('onUnexpectedGameClose();');
@@ -284,7 +318,9 @@ function createWindow() {
 
     if (launchLauncher) {
         win.loadURL(path.join(__dirname, 'static', 'index.html'));
-        win.webContents.executeJavaScript('versionPass("' + require('./package.json').version + '");');
+        win.webContents.on('did-finish-load', () => {
+            win.webContents.executeJavaScript('versionPass("' + require('./package.json').version + '");');
+        });
         win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
             if (new URL(details.url).protocol.startsWith('http')) {
                 console.log("remote content requested from: " + new URL(details.url).hostname);
@@ -314,23 +350,25 @@ function createWindow() {
 function downloadEngine(engineID) {
     console.log('installing some engines today...');
 
-    fs.mkdirSync(path.join(__dirname, 'downloads'), { recursive: true });
+    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
 
     const downloadURL = "https://ffm-backend.web.app/e" + engineID + ".zip";
-    const downloadPath = path.join(__dirname, 'downloads', 'engine' + engineID + '.zip');
+    const downloadPath = path.join(appDataPath, 'downloads', 'engine' + engineID + '.zip');
 
     progress(request(downloadURL))
         .on('progress', (state) => {
             console.log('percent: ' + Math.round(state.percent * 100) + '%');
-            win.webContents.executeJavaScript('updateProgress("' + Math.round(state.percent * 100) + '%");');
+            win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ');');
         })
         .on('error', (err) => {
             console.error(err);
             win.webContents.executeJavaScript('onDownloadError();');
         })
         .on('end', () => {
-            fs.mkdirSync(path.join(__dirname, 'engines', 'engine' + engineID), { recursive: true });
-            zl.extract(downloadPath, path.join(__dirname, 'engines', 'engine' + engineID), (err) => {
+            var src = path.join(appDataPath, 'engines', 'engine' + engineID);
+            fs.mkdirSync(src, { recursive: true });
+            dbWriteValue('engine' + engineID, src);
+            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + engineID), (err) => {
                 if (err) {
                     console.error(err);
                     win.webContents.executeJavaScript('onDownloadError();');
@@ -345,10 +383,7 @@ function downloadEngine(engineID) {
 app.whenReady().then(() => {
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
         var ver = JSON.parse(body).version;
-        var blist = ['Let\'s update'];
-        if (process.argv.includes('--nfu')) {
-            blist.push('No, thanks');
-        }
+        var blist = ['Let\'s update','Later (not reccomended)'];
         if (require('./package.json').version != ver) {
             dialog.showMessageBox({
                 title: 'Update available',
@@ -379,12 +414,11 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
 
-var mmi;
 ipcMain.on('install-mod', (event, url, ed) => {
     console.log('installing mod...');
-    fs.mkdirSync(path.join(__dirname, 'downloads'), { recursive: true });
+    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
 
-    const downloadPath = path.join(__dirname, 'downloads', 'mod-' + btoa(url) + '.zip');
+    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
 
     progress(request(url))
         .on('progress', (state) => {
@@ -396,7 +430,7 @@ ipcMain.on('install-mod', (event, url, ed) => {
             mmi.webContents.executeJavaScript('onDownloadError();');
         })
         .on('end', () => {
-            zl.extract(downloadPath, path.join(__dirname, 'engines', 'engine' + ed, 'mods'), (err) => {
+            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + ed, 'mods'), (err) => {
                 if (err) {
                     console.error(err);
                     mmi.webContents.executeJavaScript('onDownloadError();');

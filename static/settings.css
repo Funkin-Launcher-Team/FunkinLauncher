@@ -3,6 +3,8 @@
     src: url("./fnf.ttf");
 }
 
+a { color: white; }
+
 body {
     background-image: url("./stageback.png");
     margin: 0;
@@ -50,9 +52,21 @@ button:active {
     }
 }
 
+input {
+    background-color: #1c141d;
+    color: white;
+    width: 95%;
+    height: 20px;
+    border: none;
+    padding: 4px;
+    padding-left: 3px;
+    margin-right: 10px;
+}
 
-.areyousure {
+.areyousure h1 {
     font-size: 30px;
+}
+.areyousure {
     position: fixed;
     top: 0;
     left: 0;

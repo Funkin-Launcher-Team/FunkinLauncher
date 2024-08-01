@@ -2,22 +2,91 @@ console.log = function (...args) {
     window.electronAPI.log(args.join(' '));
 }
 
+var modEngine = '1';
+
+async function analyzePackage(url, type, id) {
+    var info = {};
+    await fetch("https://gamebanana.com/apiv11/File/" + url.split('mmdl/')[1])
+        .then(a => a.json())
+        .then(fileInfo => {
+            info = fileInfo;
+        });
+
+    // Phase 1: Check if the mod is for the correct engine
+    if (info._sClamAvResult && info._sAvastAvResult) {
+        if (info._sClamAvResult != 'clean' && info._sAvastAvResult != 'clean') {
+            console.log('failed check 1');
+            window.alert('This mod has been flagged as malicious by GameBanana. To prevent any damage to your system, this mod cannot be installed.');
+            window.close();
+            return;
+        }
+    }
+    
+    // Phase 2: Check if the mod has an executable
+    if (info._bContainsExe) {
+        console.log('failed check 2');
+        window.alert('This mod is not supported!');
+        window.close();
+        return;
+    }
+
+    // Analyze the package
+    var filetree = info._aMetadata._aArchiveFileTree;
+
+    if(Object.prototype.toString.call(filetree) === '[object Array]') {
+        // It's an array... strange.
+        console.log('failed array check');
+        window.alert('This mod is not supported!');
+        window.close(); 
+        return;
+    }
+    else {
+        var keys = Object.keys(filetree);
+        var folders = 0;
+        var fToCheck = {};
+        for (var i = 0; i < keys.length; i++) {
+            if (typeof filetree[keys[i]] == 'object') {
+                folders++;
+                fToCheck = filetree[keys[i]];
+            }
+        }
+        if (folders != 1) {
+            console.log('failed folder count check');
+            window.alert('This mod is not supported!');
+            window.close();
+            return;
+        }
+        else {
+            var files = fToCheck;
+            var daThing = JSON.stringify(files);
+            if (daThing.includes('meta.json') && !daThing.includes('_meta.json')) {
+                modEngine = '1';
+            }
+            if (daThing.includes('_polymod_meta.json')) {
+                modEngine = '2';
+            }
+            document.getElementsByClassName('launcher')[0].style.display = 'block';
+            document.getElementsByClassName('loading')[0].style.display = 'none';
+        }
+    }
+}
+
 function receiveUrl(url, type, id) {
     window.url = url.replace('flmod://', '');
     window.subID = id;
+
+    
     fetch("https://gamebanana.com/apiv11/" + type + "/" + id + "/ProfilePage")
         .then(response => response.json())
         .then(data => {
             document.getElementById('whereDD').innerHTML = 'What engine is <b>' + data._sName + '</b> for?';
+            analyzePackage(url,type,id);
         })
         .catch(error => console.error(error));
 }
 
+
 function installMod() {
-    // todo: find smth to check for mod updates
-    var ma = localStorage.getItem('installedMods');
-    ma.push(window.subID);
-    localStorage.setItem('installedMods',ma);
     var dropdown = document.getElementById('enginedd');
     var selectedOption = dropdown.value;
 
@@ -40,7 +109,7 @@ function onDownloadComplete() {
     window.close();
 }
 
-fetch("https://ffm-backend.web.app/engines.json")
+fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
     .then(response => response.json())
     .then(data => {
         var dropdown = document.getElementById('enginedd');
@@ -50,11 +119,9 @@ fetch("https://ffm-backend.web.app/engines.json")
             option.value = engine.id;
             dropdown.add(option);
         });
+        dropdown.value = modEngine;
     });
     
-if (localStorage.getItem('installedMods') == null || localStorage.getItem('installedMods') == undefined) {
-    localStorage.setItem('installedMods',[]);
-}
 
 // initialize hls stream
 var video = document.getElementById('bgvE');

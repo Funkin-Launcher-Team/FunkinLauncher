@@ -2,6 +2,11 @@ console.log = function (...args) {
     window.electronAPI.log(args.join(' '));
 }
 
+const lerp = (x, y, a) => x * (1 - a) + y * a;
+var targetProgress = 0;
+setInterval(function () {
+    document.getElementById('progress').value = lerp(document.getElementById('progress').value, targetProgress, 0.95);
+});
 var bgm;
 
 // var isGameCloseEventGonnaFireAndTalkAbotuImportedEngine = false;
@@ -59,7 +64,7 @@ function onGameClose() {
 }
 
 function updateProgress(percent) {
-    document.getElementById('progress').value = percent;
+    targetProgress = percent;
 }
 
 function onDownloadError() {
@@ -103,7 +108,7 @@ function importEngine() {
     window.electronAPI.importEngine(document.getElementById('enginedd').value);
 }
 
-fetch("https://ffm-backend.web.app/engines.json")
+fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
     .then(response => response.json())
     .then(data => {
         var dropdown = document.getElementById('enginedd');
@@ -135,28 +140,6 @@ bgm = new Audio('bgm.mp3');
 bgm.loop = true;
 bgm.volume = localStorage.getItem('volume');
 bgm.play();
-
-// initialize hls stream
-// copied this thing from the demo web lol
-var video = document.getElementById('bgvE');
-if (Hls.isSupported()) {
-    var hls = new Hls({
-        debug: true,
-    });
-    hls.loadSource('./bgv/bgv.m3u8');
-    hls.attachMedia(video);
-    hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-        video.muted = true;
-        video.play();
-    });
-}
-else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    // this wont happen... right???
-    video.src = './bgv/bgv.m3u8';
-    video.addEventListener('canplay', function () {
-        video.play();
-    });
-}
 
 var deg = 0;
 setInterval(function() {

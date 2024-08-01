@@ -9,21 +9,9 @@ function btngen(element, div) {
     btn.innerHTML = '<b>X</b>';
     btn.className = 'erb';
     btn.onclick = function() {
-        /*
-        if (window.confirm('Are you sure you want to remove this engine? This action is irreversible.')) {
-            window.electronAPI.removeEngine(element);
+        if (window.confirm('Are you sure?')) {
+            window.electronAPI.removeEngine(element, window.confirm('Should the files be deleted too?'));
             done();
-        }
-            */
-        document.getElementsByClassName('areyousure')[0].style.display = 'block';
-        onHellYeah = function() {
-            window.electronAPI.removeEngine(element);
-            done();
-            onHellYeah = function(){};
-        }
-        onNope = function() {
-            document.getElementsByClassName('areyousure')[0].style.display = 'none';
-            onNope = function(){};
         }
     }
     div.appendChild(btn);
@@ -36,7 +24,7 @@ function done() {
 
 var engineName = ['Kade Engine', 'Psych Engine', 'Vanilla / VSlice'];
 
-fetch("https://ffm-backend.web.app/engines.json")
+fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
 .then(response => response.json())
 .then(data => {
     engineName = data.execName;
@@ -74,8 +62,35 @@ function passData(data) {
     });
 }
 
+function setHost() {
+    try {
+        new URL('https://' + document.getElementById('bh').value);
+    }
+    catch (e) {
+        window.alert('The host you entered is invalid.');
+        return;
+    }
+    try {
+        fetch('https://' + document.getElementById('bh').value + '/engines.json')
+            .then(response => response.json())
+            .then(data => {
+                window.electronAPI.securityAlert(true, document.getElementById('bh').value);
+            })
+            .catch(e => {
+                window.alert('The host you entered cannot be reached.');
+            });
+    }
+    catch (e) {
+        window.alert('The host you entered is invalid.');
+    }
+}
+
 function getFromArray(array, index) {
     return (array[index] ? array[index] : '');
+}
+
+function security() {
+    window.electronAPI.securityAlert(false,'');
 }
 
 function showMods(modsHTML) {
@@ -93,6 +108,30 @@ function apply() {
     window.electronAPI.reloadLauncher();
 }
 
+document.getElementById('bh').value = localStorage.getItem('engineSrc');
+
+setInterval(function() {
+    try {
+        if (new URL("https://" + document.getElementById('bh').value).hostname == 'ffm-backend.web.app') {
+            document.getElementsByClassName('reccomendedHost')[0].style.display = 'flex';
+            document.getElementsByClassName('notReccomendedHost')[0].style.display = 'none';
+        }
+        else {
+            document.getElementsByClassName('reccomendedHost')[0].style.display = 'none';
+            document.getElementsByClassName('notReccomendedHost')[0].style.display = 'flex';
+        }
+    }
+    catch (e) {}
+},100);
+
+if (document.getElementById('bh').value == 'ffm-backend.web.app') {
+    document.getElementsByClassName('reccomendedHost')[0].style.display = 'flex';
+    document.getElementsByClassName('notReccomendedHost')[0].style.display = 'none';
+}
+else {
+    document.getElementsByClassName('reccomendedHost')[0].style.display = 'none';
+    document.getElementsByClassName('notReccomendedHost')[0].style.display = 'flex';
+}
 
 /*
 

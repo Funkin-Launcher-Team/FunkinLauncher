@@ -220,13 +220,13 @@ function createWindow() {
 
     ipcMain.on('import-engine', (event, engineID) => {
         // prompt user to select a folder
+        const webContents = event.sender;
+        const eventer = BrowserWindow.fromWebContents(webContents) ;
         console.log('importing engine...');
         dialog.showOpenDialog(win, { properties: ['openDirectory'] }).then((result) => {
-            if (!result.canceled) {
                 var src = result.filePaths[0];
                 dbWriteValue('engine' + engineID, src);
-                win.webContents.executeJavaScript('window.alert(\'Imported engine successfully\')onGameClose();');
-            }
+                eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully\')onGameClose();');
         });
     });
     ipcMain.on('download-engine', (event, engineID) => {
@@ -246,6 +246,7 @@ function createWindow() {
     });
     ipcMain.on('load-game', (event, engineID) => {
         win.webContents.executeJavaScript('onGameLoad();');
+        win.hide();
         var gamePath = dbReadValue('engine' + engineID);
         console.log('loading game from ' + gamePath);
         if (!fs.existsSync(gamePath)) {
@@ -256,10 +257,12 @@ function createWindow() {
             exec('start ' + execName[engineID], { cwd: dbReadValue('engine' + engineID) }, (err, stdout, stderr) => {
                 if (err) {
                     console.error(err);
+                    win.show();
                     win.webContents.executeJavaScript('onUnexpectedGameClose();');
                     return;
                 }
                 console.log(stdout);
+                win.show();
                 win.webContents.executeJavaScript('onGameClose();');
             });
     });

@@ -158,4 +158,4 @@ setInterval(calculateFPS, 1000);
 
 */
 
-window.camera.init(125,70);
+window.camera.init(105,70);

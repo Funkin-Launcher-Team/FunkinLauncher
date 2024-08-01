@@ -2,6 +2,11 @@
 
 An AIO tool for managing FNF.
 
+# Credits
+
+toperri - everything
+![Jukestar](https://jukestar.newgrounds.com/) - author of Fuzzfreak (background music)
+
 # How to run
 
 You'll need Node.js installed.
@@ -18,4 +23,4 @@ Feel free to use electron-forge or electron-builder to build Funkin Launcher. I 
 
 # License
 
-MIT
+This work is licensed under CC BY-NC-SA 4.0

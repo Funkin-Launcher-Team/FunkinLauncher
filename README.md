@@ -4,7 +4,8 @@ An AIO tool for managing FNF.
 
 # Credits
 
-toperri - everything
+toperri - Programmer
+HeroEyad - Programmer
 ![Jukestar](https://jukestar.newgrounds.com/) - author of Fuzzfreak (background music)
 
 # How to run

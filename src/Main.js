@@ -29,48 +29,24 @@ const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
 const { pathToFileURL } = require('url');
+const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue } = require('./Database');
 
-var appDataPath = app.getPath('documents') + '\\FNF Launcher';
+var appDataPath = app.getPath('appData') + '\\FNF Launcher';
 
 if (!fs.existsSync(appDataPath)) {
     fs.mkdirSync(appDataPath, { recursive: true });
 }
 
-// Create database if not existing
-if (!fs.existsSync(path.join(__dirname, 'dbfile.json'))) {
-    fs.writeFileSync(path.join(__dirname, 'dbfile.json'),JSON.stringify({"version": "1"}));
-}
-
-async function dbWriteValue(key, value) {
-    var db = JSON.parse(fs.readFileSync(path.join(__dirname, 'dbfile.json'), 'utf8'));
-    db[key] = value;
-    fs.writeFileSync(path.join(__dirname, 'dbfile.json'), JSON.stringify(db));
-}
-
-function dbReadValue(key) {
-    var db = JSON.parse(fs.readFileSync(path.join(__dirname, 'dbfile.json'), 'utf8'));
-    return db[key];
-}
-
-function dbGetAllEngines() {
-    var db = JSON.parse(fs.readFileSync(path.join(__dirname, 'dbfile.json'), 'utf8'));
-    var engines = [];
-    for (var key in db) {
-        if (key.startsWith('engine') && key.startsWith('engineSrc') == false) {
-            engines.push(key);
-        }
-    }
-    return engines;
-}
-
-function dbDeleteValue(key) {
-    var db = JSON.parse(fs.readFileSync(path.join(__dirname, 'dbfile.json'), 'utf8'));
-    delete db[key];
-    fs.writeFileSync(path.join(__dirname, 'dbfile.json'), JSON.stringify(db));
-}
-
-if (dbReadValue('engineSrc') == null || dbReadValue('engineSrc') == undefined) {
-    dbWriteValue('engineSrc', 'ffm-backend.web.app');
+// Migrate 1.4 engines to 1.5
+if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {
+    fs.readdirSync(path.join(__dirname, '../', 'engines')).forEach((element) => {
+        dbWriteValue(element, path.join(appDataPath, 'engines', element));
+        move(path.join(__dirname, '../', 'engines', element), path.join(appDataPath, 'engines', element), (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
+    });
 }
 
 var mmi;
@@ -119,7 +95,7 @@ var launcherWindow = {
     },
     webPreferences: {
         nodeIntegration: true,
-        preload: path.join(__dirname, 'ipc.js')
+        preload: path.join(__dirname, 'IPC.js')
     }
 };
 
@@ -137,7 +113,7 @@ var mmiWindow = {
     },
     webPreferences: {
         nodeIntegration: true,
-        preload: path.join(__dirname, 'ipc.js')
+        preload: path.join(__dirname, 'IPC.js')
     }
 };
 var win;
@@ -177,7 +153,7 @@ if (!gotTheLock) {
         if (!isHealthy(url)) return;
         if (url.startsWith('flmod://')) {
             mmi = new BrowserWindow(mmiWindow);
-            mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
+            mmi.loadFile(path.join(__dirname, '../', 'static', 'mmi.html'));
             mmi.webContents.on('did-finish-load', () => {
                 mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
                 mmi.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");');
@@ -193,7 +169,7 @@ function createWindow() {
         if (val.startsWith('flmod://')) {
             var url = val;
             mmi = new BrowserWindow(mmiWindow);
-            mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
+            mmi.loadFile(path.join(__dirname, '../', 'static', 'mmi.html'));
             if (!isHealthy(url)) return;
             mmi.webContents.on('did-finish-load', () => {
                 mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
@@ -214,6 +190,7 @@ function createWindow() {
 
     ipcMain.on('reload-launcher', (event) => {
         if (win) {
+            win.show();
             win.webContents.executeJavaScript('window.location.reload();');
         }
     });
@@ -230,6 +207,7 @@ function createWindow() {
         });
     });
     ipcMain.on('download-engine', (event, engineID) => {
+        win.show();
         downloadEngine(engineID);
     });
     ipcMain.on('open-engine-folder', (event) => {
@@ -250,6 +228,7 @@ function createWindow() {
         var gamePath = dbReadValue('engine' + engineID);
         console.log('loading game from ' + gamePath);
         if (!fs.existsSync(gamePath)) {
+            win.show();
             win.webContents.executeJavaScript('promptDownload();');
             return;
         }
@@ -277,10 +256,10 @@ function createWindow() {
             minimizable: false,
             webPreferences: {
             nodeIntegration: true,
-                preload: path.join(__dirname, 'ipc.js')
+                preload: path.join(__dirname, 'IPC.js')
             }
         });
-        sw.loadFile(path.join(__dirname, 'static', 'settings.html'));
+        sw.loadFile(path.join(__dirname, '../', 'static', 'settings.html'));
         sw.webContents.on('did-finish-load', () => {
             sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
 
@@ -331,27 +310,32 @@ function createWindow() {
     ipcMain.on('load-mm', (event, engineID) => {
         // ENGINEID IS IRRELEVANT FOR MM
         win.webContents.executeJavaScript('onGameLoad();');
-        var gamePath = appDataPath + "\\engines\\engine1\\PsychEngine.exe";
+        win.hide();
+        var gamePath = dbReadValue('engine1');
+        console.log('loading game from ' + gamePath);
         if (!fs.existsSync(gamePath)) {
+            win.show();
             win.webContents.executeJavaScript('promptDownload();');
             return;
         }
 
-            exec('' + execName[engineID] + ' -mm', { cwd: path.join(appDataPath, 'engines', 'engine' + engineID) }, (err, stdout, stderr) => {
+            exec('start ' + execName[engineID], { cwd: dbReadValue('engine' + engineID) }, (err, stdout, stderr) => {
                 if (err) {
                     console.error(err);
+                    win.show();
                     win.webContents.executeJavaScript('onUnexpectedGameClose();');
                     return;
                 }
                 console.log(stdout);
+                win.show();
                 win.webContents.executeJavaScript('onGameClose();');
             });
     });
 
     if (launchLauncher) {
-        win.loadURL(path.join(__dirname, 'static', 'index.html'));
+        win.loadURL(path.join(__dirname, '../', 'static', 'index.html'));
         win.webContents.on('did-finish-load', () => {
-            win.webContents.executeJavaScript('versionPass("' + require('./package.json').version + '");');
+            win.webContents.executeJavaScript('versionPass("' + require('../package.json').version + '");');
             win.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");');
         });
     }
@@ -395,10 +379,10 @@ app.whenReady().then(() => {
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
         var ver = JSON.parse(body).version;
         var blist = ['Let\'s update','Later (not reccomended)'];
-        if (require('./package.json').version != ver) {
+        if (require('../package.json').version != ver) {
             dialog.showMessageBox({
                 title: 'Update available',
-                message: 'An update is available for FNF Launcher. ' + require('./package.json').version + ' -> ' + ver,
+                message: 'An update is available for FNF Launcher. ' + require('../package.json').version + ' -> ' + ver,
                 buttons: blist
             }).then((result) => {
                 if (result.response == 0) {
@@ -495,10 +479,10 @@ eapp.get('/', (req, res) => {
         minimizable: false,
         webPreferences: {
             nodeIntegration: true,
-            preload: path.join(__dirname, 'ipc.js')
+            preload: path.join(__dirname, '../', 'ipc.js')
         }
     });
-    mmi.loadFile(path.join(__dirname, 'static', 'mmi.html'));
+    mmi.loadFile(path.join(__dirname, '../', 'static', 'mmi.html'));
     mmi.webContents.executeJavaScript('receiveUrl("' + url + '");');
     res.send('ok');
 });

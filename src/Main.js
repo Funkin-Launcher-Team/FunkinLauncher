@@ -162,39 +162,6 @@ if (!gotTheLock) {
     })
 }
 
-function mod(event, url, ed)  {
-    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
-
-    if (dbReadValue('engine' + ed) == undefined) {
-        var eventWin = BrowserWindow.fromWebContents(event.sender);
-        eventWin.webContents.executeJavaScript('onEngineNotInstalled();');
-        return;
-    }
-
-    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
-
-    progress(request(url))
-        .on('progress', (state) => {
-            console.log('percent: ' + Math.round(state.percent * 100) + '%');
-            mmi.webContents.executeJavaScript('updateProgress("' + Math.round(state.percent * 100) + '%");');
-        })
-        .on('error', (err) => {
-            console.error(err);
-            mmi.webContents.executeJavaScript('onDownloadError();');
-        })
-        .on('end', () => {
-            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + ed, 'mods'), (err) => {
-                if (err) {
-                    console.error(err);
-                    mmi.webContents.executeJavaScript('onDownloadError();');
-                    return;
-                }
-                fs.rmSync(downloadPath, { recursive: true });
-            });
-            mmi.webContents.executeJavaScript('onDownloadComplete();');
-        })
-        .pipe(fs.createWriteStream(downloadPath));
-}
 
 function createWindow() {
     var launchLauncher = true;
@@ -378,36 +345,54 @@ function createWindow() {
 function downloadEngine(engineID) {
     console.log('installing some engines today...');
 
-    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
+    dialog.showOpenDialog(win, {
+        properties: ['openDirectory']
+    }).then(result => {
+        if (result.canceled) {
+            win.show();
+            win.webContents.executeJavaScript('promptDownload();');
+            console.log('User canceled the directory selection');
+            return;
+        }
 
-    const downloadURL = "https://ffm-backend.web.app/e" + engineID + ".zip";
-    const downloadPath = path.join(appDataPath, 'downloads', 'engine' + engineID + '.zip');
+        const selectedPath = result.filePaths[0];
+        const downloadPath = path.join(selectedPath, 'engine' + engineID + '.zip');
+        const extractPath = path.join(selectedPath, 'engine' + engineID);
 
-    progress(request(downloadURL))
-        .on('progress', (state) => {
-            console.log('percent: ' + Math.round(state.percent * 100) + '%');
-            win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ');');
-        })
-        .on('error', (err) => {
-            console.error(err);
-            win.webContents.executeJavaScript('onDownloadError();');
-        })
-        .on('end', () => {
-            var src = path.join(appDataPath, 'engines', 'engine' + engineID);
-            fs.mkdirSync(src, { recursive: true });
-            dbWriteValue('engine' + engineID, src);
-            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + engineID), (err) => {
-                if (err) {
-                    console.error(err);
-                    win.webContents.executeJavaScript('onDownloadError();');
-                    return;
-                }
-                fs.rmSync(downloadPath, { recursive: true });
-            });
-            win.webContents.executeJavaScript('onDownloadComplete();');
-        })
-        .pipe(fs.createWriteStream(downloadPath));
+        fs.mkdirSync(selectedPath, { recursive: true });
+
+        const downloadURL = "https://ffm-backend.web.app/e" + engineID + ".zip";
+
+        progress(request(downloadURL))
+            .on('progress', (state) => {
+                console.log('percent: ' + Math.round(state.percent * 100) + '%');
+                win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ');');
+            })
+            .on('error', (err) => {
+                console.error(err);
+                win.webContents.executeJavaScript('onDownloadError();');
+            })
+            .on('end', () => {
+                dbWriteValue('engine' + engineID, extractPath);
+                zl.extract(downloadPath, extractPath, (err) => {
+                    if (err) {
+                        console.error(err);
+                        win.webContents.executeJavaScript('onDownloadError();');
+                        return;
+                    }
+                    fs.rmSync(downloadPath, { recursive: true });
+                    win.webContents.executeJavaScript('onDownloadComplete();');
+                });
+            })
+            .pipe(fs.createWriteStream(downloadPath));
+    }).catch(err => {
+        console.error(err);
+        win.webContents.executeJavaScript('returnToMainMenu();');
+    });
 }
+
+
+
 app.whenReady().then(() => {
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
         var ver = JSON.parse(body).version;
@@ -472,7 +457,31 @@ ipcMain.on('security-alert', (event, setHost, host) => {
 
 ipcMain.on('install-mod', (event, url, ed) => {
     console.log('installing mod...');
-    mod(event, url, ed);
+    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
+
+    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
+
+    progress(request(url))
+        .on('progress', (state) => {
+            console.log('percent: ' + Math.round(state.percent * 100) + '%');
+            mmi.webContents.executeJavaScript('updateProgress("' + Math.round(state.percent * 100) + '%");');
+        })
+        .on('error', (err) => {
+            console.error(err);
+            mmi.webContents.executeJavaScript('onDownloadError();');
+        })
+        .on('end', () => {
+            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + ed, 'mods'), (err) => {
+                if (err) {
+                    console.error(err);
+                    mmi.webContents.executeJavaScript('onDownloadError();');
+                    return;
+                }
+                fs.rmSync(downloadPath, { recursive: true });
+            });
+            mmi.webContents.executeJavaScript('onDownloadComplete();');
+        })
+        .pipe(fs.createWriteStream(downloadPath));
 });
 
 /*

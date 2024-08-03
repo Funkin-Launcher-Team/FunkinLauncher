@@ -361,7 +361,7 @@ function downloadEngine(engineID) {
 
         fs.mkdirSync(selectedPath, { recursive: true });
 
-        const downloadURL = "https://ffm-backend.web.app/e" + engineID + ".zip";
+        const downloadURL = "https://" + dbReadValue('engineSrc') + "/" + engineID + ".zip";
 
         progress(request(downloadURL))
             .on('progress', (state) => {
@@ -459,6 +459,11 @@ ipcMain.on('install-mod', (event, url, ed) => {
     console.log('installing mod...');
     fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
 
+    if (dbReadValue('engine' + ed) == undefined) {
+        mmi.webContents.executeJavaScript('onEngineNotInstalled();');
+        return;
+    }
+
     const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
 
     progress(request(url))
@@ -471,7 +476,7 @@ ipcMain.on('install-mod', (event, url, ed) => {
             mmi.webContents.executeJavaScript('onDownloadError();');
         })
         .on('end', () => {
-            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + ed, 'mods'), (err) => {
+            zl.extract(downloadPath, path.join(dbReadValue('engine' + ed), 'mods'), (err) => {
                 if (err) {
                     console.error(err);
                     mmi.webContents.executeJavaScript('onDownloadError();');

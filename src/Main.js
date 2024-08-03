@@ -162,6 +162,39 @@ if (!gotTheLock) {
     })
 }
 
+function mod(event, url, ed)  {
+    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
+
+    if (dbReadValue('engine' + ed) == undefined) {
+        var eventWin = BrowserWindow.fromWebContents(event.sender);
+        eventWin.webContents.executeJavaScript('onEngineNotInstalled();');
+        return;
+    }
+
+    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
+
+    progress(request(url))
+        .on('progress', (state) => {
+            console.log('percent: ' + Math.round(state.percent * 100) + '%');
+            mmi.webContents.executeJavaScript('updateProgress("' + Math.round(state.percent * 100) + '%");');
+        })
+        .on('error', (err) => {
+            console.error(err);
+            mmi.webContents.executeJavaScript('onDownloadError();');
+        })
+        .on('end', () => {
+            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + ed, 'mods'), (err) => {
+                if (err) {
+                    console.error(err);
+                    mmi.webContents.executeJavaScript('onDownloadError();');
+                    return;
+                }
+                fs.rmSync(downloadPath, { recursive: true });
+            });
+            mmi.webContents.executeJavaScript('onDownloadComplete();');
+        })
+        .pipe(fs.createWriteStream(downloadPath));
+}
 
 function createWindow() {
     var launchLauncher = true;
@@ -439,31 +472,7 @@ ipcMain.on('security-alert', (event, setHost, host) => {
 
 ipcMain.on('install-mod', (event, url, ed) => {
     console.log('installing mod...');
-    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
-
-    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
-
-    progress(request(url))
-        .on('progress', (state) => {
-            console.log('percent: ' + Math.round(state.percent * 100) + '%');
-            mmi.webContents.executeJavaScript('updateProgress("' + Math.round(state.percent * 100) + '%");');
-        })
-        .on('error', (err) => {
-            console.error(err);
-            mmi.webContents.executeJavaScript('onDownloadError();');
-        })
-        .on('end', () => {
-            zl.extract(downloadPath, path.join(appDataPath, 'engines', 'engine' + ed, 'mods'), (err) => {
-                if (err) {
-                    console.error(err);
-                    mmi.webContents.executeJavaScript('onDownloadError();');
-                    return;
-                }
-                fs.rmSync(downloadPath, { recursive: true });
-            });
-            mmi.webContents.executeJavaScript('onDownloadComplete();');
-        })
-        .pipe(fs.createWriteStream(downloadPath));
+    mod(event, url, ed);
 });
 
 /*

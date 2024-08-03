@@ -71,6 +71,12 @@ async function analyzePackage(url, type, id) {
     }
 }
 
+function onEngineNotInstalled() {
+    window.alert('The selected engine is not installed. Please install the engine and try again.');
+    document.getElementsByClassName('launcher')[0].style.display = 'block';
+    document.getElementsByClassName('download')[0].style.display = 'none';
+}
+
 function receiveUrl(url, type, id) {
     window.url = url.replace('flmod://', '');
     window.subID = id;

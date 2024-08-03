@@ -8,6 +8,7 @@ An AIO tool for managing FNF installations.
   <tr>
     <th><a href="https://www.errico.dev/?ref=flauncher">toperri</a></th>
     <th><a href="https://heroeyad.github.io/">HeroEyad</a></th>
+    <th><a href="https://x.com/Sector03_">Sector03</a></th>
   </tr>
   <tr>
     <td>
@@ -16,10 +17,14 @@ An AIO tool for managing FNF installations.
     <td>
        <img src="https://github.com/user-attachments/assets/c507b4f7-0234-4903-b5c6-42041c0335ea" alt="HeroEyad" width="90" height="90">
     </td>
+    <td>
+       <img src="https://github.com/user-attachments/assets/405d1106-e986-48a6-8f94-21d592dec931" alt="Sector03" width="90" height="90">
+    </td>
   </tr>
   <tr>
     <td>Programmer</td>
     <td>Programmer</td>
+    <td>Artist</td>
   </tr>
 </table>
 

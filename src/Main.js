@@ -356,8 +356,8 @@ function downloadEngine(engineID) {
         }
 
         const selectedPath = result.filePaths[0];
-        const downloadPath = path.join(selectedPath, 'engine' + engineID + '.zip');
-        const extractPath = path.join(selectedPath, 'engine' + engineID);
+        const downloadPath = path.join(selectedPath, engineID + '.zip');
+        const extractPath = path.join(selectedPath, engineID);
 
         fs.mkdirSync(selectedPath, { recursive: true });
 
@@ -382,8 +382,8 @@ function downloadEngine(engineID) {
                         return;
                     }
                     fs.rmSync(downloadPath, { recursive: true });
-                    win.webContents.executeJavaScript('onDownloadComplete();');
                 });
+                win.webContents.executeJavaScript('onDownloadComplete();');
             })
             .pipe(fs.createWriteStream(downloadPath));
     }).catch(err => {

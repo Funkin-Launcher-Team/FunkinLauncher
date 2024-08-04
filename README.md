@@ -12,13 +12,13 @@ An AIO tool for managing FNF installations.
   </tr>
   <tr>
     <td>
-      <img src="https://www.errico.dev/assets/ProfilePicture.png" alt="toperri" width="90" height="90">
+      <img src="art/toperri.png" alt="toperri" width="90" height="90">
     </td>
     <td>
-       <img src="https://github.com/user-attachments/assets/c507b4f7-0234-4903-b5c6-42041c0335ea" alt="HeroEyad" width="90" height="90">
+       <img src="art/heroeyad.jpg" alt="HeroEyad" width="90" height="90">
     </td>
     <td>
-       <img src="https://github.com/user-attachments/assets/405d1106-e986-48a6-8f94-21d592dec931" alt="Sector03" width="90" height="90">
+       <img src="art/sector.png" alt="Sector03" width="90" height="90">
     </td>
   </tr>
   <tr>

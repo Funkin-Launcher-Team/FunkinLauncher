@@ -361,7 +361,8 @@ function downloadEngine(engineID) {
 
         fs.mkdirSync(selectedPath, { recursive: true });
 
-        const downloadURL = "https://" + dbReadValue('engineSrc') + "/" + engineID + ".zip";
+        const downloadURL = "https://" + dbReadValue('engineSrc') + "/e" + engineID + ".zip";
+        console.log(downloadURL);
 
         progress(request(downloadURL))
             .on('progress', (state) => {

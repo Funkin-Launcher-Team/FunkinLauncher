@@ -22,7 +22,7 @@ function loadEngine() {
 
 function versionPass(data) {
     document.getElementById('version').innerText = "v." + data + ' - ';
-    document.getElementById('version').innerHTML += '<a href="javascript:license()">License</a>';
+    document.getElementById('version').innerHTML += '<a href="javascript:license()">Credits</a>';
 }
 
 function license() {

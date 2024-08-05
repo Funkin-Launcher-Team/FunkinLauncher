@@ -19,7 +19,7 @@ a {
 .license {
     font-size: 30px;
     position: fixed;
-    top: 0;
+    top: -20;
     left: 0;
     width: 100%;
     font-family: "FNF";
@@ -85,8 +85,8 @@ a {
     position: fixed;
     bottom: 0px;
     color: white;
-    left: 20px;
-    font-size: 10px;
+    left: 15px;
+    font-size: 12px;
     font-family: 'Verdana', sans-serif;
 }
 .settings {

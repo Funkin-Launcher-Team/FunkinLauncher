@@ -16,13 +16,17 @@ a {
     }
 }
 
-.license {
+h1 {
     font-size: 30px;
+    font-family: 'FNF', sans-serif;
+    color: white;
+    margin-bottom: 2px;
+}
+.license {
     position: fixed;
     top: -20;
     left: 0;
     width: 100%;
-    font-family: "FNF";
     display: flex;
     text-align: center;
     padding-top: 30vh;

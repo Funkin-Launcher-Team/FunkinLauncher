@@ -356,8 +356,8 @@ function downloadEngine(engineID) {
         }
 
         const selectedPath = result.filePaths[0];
-        const downloadPath = path.join(selectedPath, engineID + '.zip');
-        const extractPath = path.join(selectedPath, engineID);
+        const downloadPath = path.join(selectedPath, 'temp_e' + engineID + '.zip');
+        const extractPath = path.join(selectedPath);
 
         fs.mkdirSync(selectedPath, { recursive: true });
 

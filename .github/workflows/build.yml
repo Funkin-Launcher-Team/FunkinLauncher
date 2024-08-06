@@ -19,7 +19,7 @@ jobs:
             platform: win
             dist: dist/funkin-launcher.zip
           - kind: mac
-            os: macos-11
+            os: macos-latest
             platform: osx
             dist: dist/funkin-launcher.zip
     steps:

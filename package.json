@@ -9,8 +9,8 @@
     "dist": "electron-builder",
 
     "build-linux": "electron-builder --linux AppImage tar.gz",
-    "build-osx": "electron-builder --mac zip nsis",
-    "build-win": "electron-builder --win zip"
+    "build-osx": "electron-builder --mac zip",
+    "build-win": "electron-builder --win zip nsis"
   },
   "build": {
     "productName": "Funkin Launcher",

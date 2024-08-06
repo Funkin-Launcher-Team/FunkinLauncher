@@ -15,12 +15,11 @@
  * https://gamebanana.com/tools/17526
 */
 
-
-
 const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell } = require('electron');
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const chalk = require('chalk');
 const progress = require('request-progress');
 const URL = require('lite-url');
 const zl = require("zip-lib");
@@ -31,6 +30,7 @@ const { title } = require('process');
 const { pathToFileURL } = require('url');
 const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue } = require('./Database');
 
+// Create AppData (for the logs)
 var appDataPath = app.getPath('appData') + '\\FNF Launcher';
 
 if (!fs.existsSync(appDataPath)) {
@@ -49,14 +49,11 @@ if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {
     });
 }
 
-var mmi;
-
+// TODO: this function just acts as bridge but we need a firewall
 function request(url, callback) {
     return require('request')(url, callback);
 }
 
-
-var sw;
 
 function isHealthy(url) {
     // TODO: sanitize url
@@ -68,19 +65,31 @@ function formattedDate() {
     return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getHours() + '-' + date.getMinutes() + '-logs';
 }
   
-// log to file
-process.stdout.write('NOTICE: the logs are stored in ' + path.join(appDataPath, 'logs') + '\n');
+// Print console to logs too
 if (!fs.existsSync(path.join(appDataPath, 'logs'))) {
     fs.mkdirSync(path.join(appDataPath, 'logs'), { recursive: true });
 }
 
 var logStream = fs.createWriteStream(path.join(appDataPath, 'logs', formattedDate() + '.log'), { flags: 'w' });
 
+// Better logs to terminal
+
+const oldLog = console.log;
 console.log = function (d) {
-    logStream.write('(MAIN PROCESS) ' + d + '\n');
-    process.stdout.write('(MAIN PROCESS) ' + d + '\n');
+    const stack = new Error().stack.split('\n');
+    const caller = stack[2].trim().split(' ');
+    const fileName = caller[1].split('/').pop();
+    const lineNumber = caller[caller.length - 1].split(':')[1];
+    const logMessage = `${lineNumber.replace(__dirname, '')} ${d}`;
+    logStream.write(logMessage + '\n');
+    process.stdout.write(chalk.red(lineNumber.replace(__dirname, '')) + ': ' + d + '\n\n');
 };
 
+
+// Window configuration
+var mmi;
+var sw;
+var win;
 
 var launcherWindow = {
     width: 1280,
@@ -95,7 +104,7 @@ var launcherWindow = {
     },
     webPreferences: {
         nodeIntegration: true,
-        preload: path.join(__dirname, 'IPC.js')
+        preload: path.join(__dirname, 'RendererIPC.js')
     }
 };
 
@@ -113,23 +122,20 @@ var mmiWindow = {
     },
     webPreferences: {
         nodeIntegration: true,
-        preload: path.join(__dirname, 'IPC.js')
+        preload: path.join(__dirname, 'RendererIPC.js')
     }
 };
-var win;
-var execName = [
-    "KadeEngine",
-    "PsychEngine",
-    "Funkin"
-];
+
+// Get executable names from our build host
+var execName = [];
 request('https://' + dbReadValue('engineSrc') + '/engines.json', (err, res, body) => {
-    console.log(body);
+    //console.log(body);
     var json = JSON.parse(body);
     execName = json.execName;
 });
-if (!fs.existsSync(path.join(appDataPath, 'engines'))) {
-    fs.mkdirSync(path.join(appDataPath, 'engines'), { recursive: true });
-}
+
+
+// Set flmod as default protocol for app (needed for 1-click mod installation)
 if (process.defaultApp) {
     if (process.argv.length >= 2) {
       app.setAsDefaultProtocolClient('flmod', process.execPath, [path.resolve(process.argv[1])])
@@ -138,8 +144,9 @@ if (process.defaultApp) {
     app.setAsDefaultProtocolClient('flmod')
 }
 
-const gotTheLock = app.requestSingleInstanceLock()
 
+// Check if a flmod link was clicked and open the app with the link
+const gotTheLock = app.requestSingleInstanceLock()
 if (!gotTheLock) {
     app.quit()
 } else {
@@ -160,6 +167,10 @@ if (!gotTheLock) {
             });
         }
     })
+}
+
+function defineIPC() {
+    eval(fs.readFileSync(path.join(__dirname, 'MainIPC.js')).toString());
 }
 
 
@@ -183,154 +194,7 @@ function createWindow() {
         win = new BrowserWindow(launcherWindow);
     }
 
-    ipcMain.on('log', (event, message) => {
-        logStream.write('(RENDERER PROCESS) ' + message + '\n');
-        process.stdout.write('(RENDERER PROCESS) ' + message + '\n');
-    });
-
-    ipcMain.on('reload-launcher', (event) => {
-        if (win) {
-            win.show();
-            win.webContents.executeJavaScript('window.location.reload();');
-        }
-    });
-
-    ipcMain.on('import-engine', (event, engineID) => {
-        // prompt user to select a folder
-        const webContents = event.sender;
-        const eventer = BrowserWindow.fromWebContents(webContents) ;
-        console.log('importing engine...');
-        dialog.showOpenDialog(win, { properties: ['openDirectory'] }).then((result) => {
-                var src = result.filePaths[0];
-                dbWriteValue('engine' + engineID, src);
-                eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully\')onGameClose();');
-        });
-    });
-    ipcMain.on('download-engine', (event, engineID) => {
-        win.show();
-        downloadEngine(engineID);
-    });
-    ipcMain.on('open-engine-folder', (event) => {
-        exec('explorer.exe ' + path.join(appDataPath, 'engines'), (err, stdout, stderr) => {});
-    });
-    ipcMain.on('open-logs-folder', (event) => {
-        exec('explorer.exe ' + path.join(appDataPath, 'logs'), (err, stdout, stderr) => {});
-    });
-    ipcMain.on('remove-engine', (event, engineID, removeFiles) => {
-        if (removeFiles) {
-            fs.rmSync(dbReadValue('engine' + engineID), { recursive: true });
-        }
-        dbDeleteValue('engine' + engineID);
-    });
-    ipcMain.on('load-game', (event, engineID) => {
-        win.webContents.executeJavaScript('onGameLoad();');
-        win.hide();
-        var gamePath = dbReadValue('engine' + engineID);
-        console.log('loading game from ' + gamePath);
-        if (!fs.existsSync(gamePath)) {
-            win.show();
-            win.webContents.executeJavaScript('promptDownload();');
-            return;
-        }
-
-            exec('start ' + execName[engineID], { cwd: dbReadValue('engine' + engineID) }, (err, stdout, stderr) => {
-                if (err) {
-                    console.error(err);
-                    win.show();
-                    win.webContents.executeJavaScript('onUnexpectedGameClose();');
-                    return;
-                }
-                console.log(stdout);
-                win.show();
-                win.webContents.executeJavaScript('onGameClose();');
-            });
-    });
-    ipcMain.on('open-settings', (event) => {
-        sw = new BrowserWindow({
-            parent: win,
-            modal: true,
-            width: 800,
-            height: 600,
-            resizable: false,
-            fullscreenable: false,
-            minimizable: false,
-            webPreferences: {
-            nodeIntegration: true,
-                preload: path.join(__dirname, 'IPC.js')
-            }
-        });
-        sw.loadFile(path.join(__dirname, '../', 'static', 'settings.html'));
-        sw.webContents.on('did-finish-load', () => {
-            sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
-
-            var arrayOfStuff = [];
-            var allEngines = dbGetAllEngines();
-            allEngines.forEach((element) => {
-                var enginepather = dbReadValue(element);
-                var atLeastOneMod = false;
-                arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('engine',''))] + "</h3>");
-                fs.readdirSync(path.join(enginepather, 'mods')).forEach((element2) => {
-                    if (fs.lstatSync(path.join(enginepather, 'mods', element2)).isDirectory()) {
-                        arrayOfStuff.push("<p>" + element2 + "</p>");
-                        atLeastOneMod = true;
-                    }
-                });
-                if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
-            });
-
-
-            sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')"); 
-        }); 
-    });
-    ipcMain.on('reload-settings', (event) => {
-        if (sw) {
-            sw.webContents.executeJavaScript('window.location.reload();');
-            sw.webContents.executeJavaScript('passData("' + fs.readdirSync(path.join(appDataPath, 'engines')).join(',') + '");');
-            var arrayOfStuff = [];
-
-            // im so sorry for this
-            var arrayOfStuff = [];
-            var allEngines = dbGetAllEngines();
-            allEngines.forEach((element) => {
-                var enginepather = dbReadValue(element);
-                var atLeastOneMod = false;
-                arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('engine',''))] + "</h3>");
-                fs.readdirSync(path.join(enginepather, 'mods')).forEach((element2) => {
-                    if (fs.lstatSync(path.join(enginepather, 'mods', element2)).isDirectory()) {
-                        arrayOfStuff.push("<p>" + element2 + "</p>");
-                        atLeastOneMod = true;
-                    }
-                });
-                if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
-            });
-            
-            sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");  
-        }
-    });
-    ipcMain.on('load-mm', (event, engineID) => {
-        // ENGINEID IS IRRELEVANT FOR MM
-        win.webContents.executeJavaScript('onGameLoad();');
-        win.hide();
-        var gamePath = dbReadValue('engine1');
-        console.log('loading game from ' + gamePath);
-        if (!fs.existsSync(gamePath)) {
-            win.show();
-            win.webContents.executeJavaScript('promptDownload();');
-            return;
-        }
-
-            exec('start ' + execName[engineID], { cwd: dbReadValue('engine' + engineID) }, (err, stdout, stderr) => {
-                if (err) {
-                    console.error(err);
-                    win.show();
-                    win.webContents.executeJavaScript('onUnexpectedGameClose();');
-                    return;
-                }
-                console.log(stdout);
-                win.show();
-                win.webContents.executeJavaScript('onGameClose();');
-            });
-    });
+    defineIPC();
 
     if (launchLauncher) {
         win.loadURL(path.join(__dirname, '../', 'static', 'index.html'));
@@ -398,7 +262,10 @@ app.whenReady().then(() => {
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
         var ver = JSON.parse(body).version;
         var blist = ['Let\'s update','Later (not reccomended)'];
-        if (require('../package.json').version != ver) {
+
+        var intCV = parseInt(require('../package.json').version.replace(/\./g, ''));
+        var intAV = parseInt(ver.replace(/\./g, ''));
+        if (Math.max(intCV, intAV) == intAV) {
             dialog.showMessageBox({
                 title: 'Update available',
                 message: 'An update is available for FNF Launcher. ' + require('../package.json').version + ' -> ' + ver,
@@ -503,7 +370,7 @@ eapp.get('/', (req, res) => {
         minimizable: false,
         webPreferences: {
             nodeIntegration: true,
-            preload: path.join(__dirname, '../', 'ipc.js')
+            preload: path.join(__dirname, '../', 'RendererIPC.js')
         }
     });
     mmi.loadFile(path.join(__dirname, '../', 'static', 'mmi.html'));

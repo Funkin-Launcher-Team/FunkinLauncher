@@ -44,7 +44,7 @@ jobs:
         run: yarn build-${{ matrix.platform }} --publish=never
     
     - name: Publish Artifact
-      uses: actions/upload-artifact@v3.0.0
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform }}
         path: ${{ matrix.dist }}

@@ -1,0 +1,50 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    name: Build for ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - kind: linux
+            os: ubuntu-latest
+            platform: linux
+            dist: dist/funkin-launcher.tar.gz
+          - kind: windows
+            os: windows-latest
+            platform: win
+            dist: dist/funkin-launcher.zip
+          - kind: mac
+            os: macos-latest
+            platform: osx
+            dist: dist/funkin-launcher.zip
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: latest
+        cache: yarn
+
+    - name: Install Yarn dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Build project
+      id: build
+      uses: StarUbiquitous/command-output@v1.0.1 # Store stdout/stderr to outputs.
+      # You might want to turn this on if there's problems with electron-builder.
+      # env:
+      #   DEBUG: electron-builder
+      with:
+        run: yarn build-${{ matrix.platform }} --publish=never
+    
+    - name: Publish Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}
+        path: ${{ matrix.dist }}

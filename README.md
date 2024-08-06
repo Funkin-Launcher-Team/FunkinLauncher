@@ -52,7 +52,7 @@ Since this app is built on Electron, you will need to install <a href="https://n
 3) Use ``yarn build-win`` to build for Windows. [^1]
 4) Funkin Launcher will be built into the ``/dist`` folder.
 
-[^1]: Use ``yarn build-linux`` to build for Linux or ``yarn build-osx`` to build for Mac.
+[^1]: Use ``yarn build-linux`` to build for Linux or ``yarn build-osx`` to build for Mac (you WILL need to edit the source code in order to support other OSes.)
 
 # License
 

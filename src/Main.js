@@ -28,14 +28,7 @@ const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
 const { pathToFileURL } = require('url');
-const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue } = require('./Database');
-
-// Create AppData (for the logs)
-var appDataPath = app.getPath('appData') + '\\FNF Launcher';
-
-if (!fs.existsSync(appDataPath)) {
-    fs.mkdirSync(appDataPath, { recursive: true });
-}
+const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath } = require('./Database');
 
 // Migrate 1.4 engines to 1.5
 if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {

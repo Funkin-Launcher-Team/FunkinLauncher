@@ -22,7 +22,15 @@ function dbGetAllEngines() {
     var engines = [];
     for (var key in db) {
         if (key.startsWith('engine') && key.startsWith('engineSrc') == false) {
-            engines.push(key);
+            try {
+                fs.readdirSync(path.join(db[key]));
+                engines.push(key);
+            }
+            catch (e) {
+                // Delete engine from database if it does not exist anymore
+                console.log('Engine ' + key + ' does not exist anymore. Deleting from database.');
+                dbDeleteValue(key);
+            }
         }
     }
     return engines;

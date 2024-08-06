@@ -17,6 +17,7 @@
     "zip-lib": "^1.0.4"
   },
   "dependencies": {
+    "chalk": "^4.0.0",
     "express": "^4.19.2",
     "fs-move": "^6.0.0",
     "lite-url": "^1.0.5",

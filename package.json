@@ -4,12 +4,35 @@
   "description": "An AIO engine manager for Friday Night Funkin'",
   "main": "src/Bootstrap.js",
   "scripts": {
-    "test": "electron ."
+    "test": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+
+    "build-linux": "electron-builder --linux AppImage tar.gz",
+    "build-osx": "electron-builder --mac zip nsis",
+    "build-win": "electron-builder --win zip"
+  },
+  "build": {
+    "productName": "Funkin Launcher",
+    "artifactName": "funkin-launcher.${ext}",
+    "appId": "net.toperri.FunkinLauncher",
+    "win": {
+      "target": "zip nsis"
+    },
+    "mac": {
+      "category": "public.app-category.games",
+      "target": "zip"
+    },
+    "linux": {
+      "category": "Game",
+      "target": "AppImage tar.gz"
+    }
   },
   "author": "toperri",
   "license": "MIT",
   "devDependencies": {
     "electron": "^31.2.1",
+    "electron-builder": "^24.13.3",
     "express": "^4.19.2",
     "fs-move": "^6.0.0",
     "progress": "^2.0.3",

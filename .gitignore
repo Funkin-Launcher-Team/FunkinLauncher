@@ -6,7 +6,6 @@ static/js/camerawork.js
 engines/
 downloads/
 out/
-dbfile.json
 
 # Ignore builds
 dist

@@ -41,17 +41,18 @@ An AIO tool for managing FNF installations.
 
 Since this app is built on Electron, you will need to install <a href="https://nodejs.org/dist/v20.16.0/node-v20.16.0-x64.msi">Node.js</a> to run the app from source code. After that...
 
-1) Use ``npm i`` to install all dependencies required for the app to function.
-2) Also install Electron with ``npm install electron --save-dev``.
-3) Use ``curl https://raw.githubusercontent.com/toperri/camerawork/main/camerawork.js -o static/js/camerawork.js`` to download the latest version of camerawork (NOTICE: camerawork is hosted under another license!)
-4) You can now use ``npm test`` to run the app (or use ``open.bat``)
+1) Use ``npm install --global yarn`` to install Yarn.
+2) Use ``yarn install`` to install all dependencies required for the app to function.
+3) You can now use ``yarn test`` to run the app (or use ``open.bat``)
 
 # Building
 
-1) Download Electron prebuilts from their GitHub page
-2) After downloading the prebuilts, extract them, open the "resources" folder and delete the "default_app" file.
-3) Create an "app" folder in "resources".
-4) In the "app" folder put the whole GitHub repo contents except for README, .gitignore, .gitattributes, dbfile and the rfc-buildhost pdf file.
+1) Use ``npm install --global yarn`` to install Yarn.
+2) Use ``yarn install`` to install all dependencies required for the app to function.
+3) Use ``yarn build-win`` to build for Windows. [^1]
+4) Funkin Launcher will be built into the ``/dist`` folder.
+
+[^1]: Use ``yarn build-linux`` to build for Linux or ``yarn build-osx`` to build for Mac.
 
 # License
 

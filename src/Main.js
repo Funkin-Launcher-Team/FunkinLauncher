@@ -82,7 +82,7 @@ console.log = function (d) {
     const lineNumber = caller[caller.length - 1].split(':')[1];
     const logMessage = `${lineNumber.replace(__dirname, '')} ${d}`;
     logStream.write(logMessage + '\n');
-    process.stdout.write(chalk.red(lineNumber.replace(__dirname, '')) + ': ' + d);
+    process.stdout.write(chalk.red(lineNumber.replace(__dirname, '')) + ': ' + d + '\n\n');
 };
 
 
@@ -262,7 +262,10 @@ app.whenReady().then(() => {
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
         var ver = JSON.parse(body).version;
         var blist = ['Let\'s update','Later (not reccomended)'];
-        if (require('../package.json').version != ver) {
+
+        var intCV = parseInt(require('../package.json').version.replace(/\./g, ''));
+        var intAV = parseInt(ver.replace(/\./g, ''));
+        if (Math.max(intCV, intAV) == intAV) {
             dialog.showMessageBox({
                 title: 'Update available',
                 message: 'An update is available for FNF Launcher. ' + require('../package.json').version + ' -> ' + ver,

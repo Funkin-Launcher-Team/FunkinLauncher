@@ -105,7 +105,7 @@ ipcMain.on('open-settings', (event) => {
         minimizable: false,
         webPreferences: {
             nodeIntegration: true,
-            preload: path.join(__dirname, 'IPC.js')
+            preload: path.join(__dirname, 'RendererIPC.js')
         }
     });
     sw.loadFile(path.join(__dirname, '../', 'static', 'settings.html'));

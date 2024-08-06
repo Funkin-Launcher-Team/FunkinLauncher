@@ -203,7 +203,7 @@ function createWindow() {
         dialog.showOpenDialog(win, { properties: ['openDirectory'] }).then((result) => {
                 var src = result.filePaths[0];
                 dbWriteValue('engine' + engineID, src);
-                eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully\')onGameClose();');
+                eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully\');onGameClose();');
         });
     });
     ipcMain.on('download-engine', (event, engineID) => {

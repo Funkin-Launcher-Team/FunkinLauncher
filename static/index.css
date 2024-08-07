@@ -7,6 +7,39 @@ a {
     color: white;
 }
 
+.cso {
+    position: relative;
+    bottom: 0;
+    height: 0px;
+    background-color: rgb(13, 11, 14);
+    margin: 0 auto;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    width: 50%;
+    text-align: left;
+    padding: 5px;
+    z-index: 10;
+    padding: 5px;
+    display: none;
+}
+.cSelect {
+    background-color: rgb(13, 11, 14);
+    color: white;
+    border: none;
+    margin: 0 auto;
+    padding-left: 10px;
+    width: 50%;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    padding: 5px;
+    border-radius: 2px;
+    height: 30px;
+    transition: 0.3s scale;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .titlebar {
     width: 100%;
     top: 0;
@@ -92,6 +125,10 @@ h1 {
     cursor: pointer;
 }
 
+@font-face {
+    font-family: 'FNF 2';
+    src: url("./fnf-f2.ttf");
+}
 .btn {
     min-width: 110px;
     font-weight: bold;
@@ -99,7 +136,7 @@ h1 {
     font-size: 15px;
     border-radius: 2px;
     border: black;
-    font-family: 'FNF', sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     transition: 0.3s scale;
 }
 .ver {

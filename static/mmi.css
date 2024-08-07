@@ -91,7 +91,7 @@ h1 {
     color: white;
     left: 15px;
     font-size: 12px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Verdana', sans-serif;
 }
 .settings {
     position: fixed;
@@ -106,13 +106,11 @@ h1 {
 }
 #bgvE {
     width: 100%;
-    margin-bottom: 20px;
     height: 100%;
 }
 .bgvE {
     width: 100%;
     height: 100%;
-    margin-bottom: 20px;
 }
 .top {
     text-align: center;

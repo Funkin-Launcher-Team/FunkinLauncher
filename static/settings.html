@@ -26,12 +26,11 @@
         <br>
         <h2>UI Settings</h2>
         <div class="volume">
-            <span>Music volume: </span>
-            <input type="range" min="0" max="100" value="50" class="slider" id="volSlider">
-            <br>
-            <br>
-            <button onclick="apply()">Apply</button>
+            <p style="width: 200px;">BGM volume:</p>
+            <input type="range" min="0" max="100" value="50" name="volume" class="slider" id="volSlider">
         </div>
+        <br>
+        <button onclick="apply()">Apply</button>
         <br>
         <br>
         <h2>Build host</h2>
@@ -68,6 +67,9 @@
         <button class="usb" onclick="onHellYeah()">Hell yeah</button>
         <br>
         <button class="usb" onclick="onNope()">Nope</button>
+    </div>
+    <div class="prototype">
+        <p>PROTOTYPE subject to change</p>
     </div>
 </body>
 <script src="js/camerawork.js"></script>

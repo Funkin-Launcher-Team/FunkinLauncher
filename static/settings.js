@@ -47,7 +47,7 @@ function passData(data) {
         
         var p = document.createElement('p');
         p.className = "en";
-        p.innerText = formalName[parseInt(element.replace('engine',''))];
+        p.innerText = formalName[parseInt(element.replace('engine',''))].toUpperCase();
         adiv.appendChild(p);
 
         btngen(parseInt(element.replace('engine','')), adiv);
@@ -63,6 +63,12 @@ function passData(data) {
         div.appendChild(adiv);
     });
 }
+
+document.getElementById('volSlider').addEventListener('mouseup', function() {
+    var audio = new Audio('./indigo.mp3');
+    audio.volume = document.getElementById('volSlider').value / 100;
+    audio.play();
+});
 
 function setHost() {
     try {

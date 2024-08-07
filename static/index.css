@@ -7,6 +7,18 @@ a {
     color: white;
 }
 
+.titlebar {
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,0);
+    position: fixed;
+    height: 30px;
+    cursor: all-scroll;
+    z-index: 1000000;
+    -webkit-app-region: drag;
+}
+
 @keyframes onOpenLauncher {
     0% {
       left: -45%;
@@ -14,6 +26,11 @@ a {
     100% {
       left: 0%;
     }
+}
+
+td, th {
+    padding: 10px;
+    border: 1px solid white;
 }
 
 h1 {

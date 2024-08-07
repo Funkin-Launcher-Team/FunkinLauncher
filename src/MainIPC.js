@@ -106,6 +106,7 @@ ipcMain.on('open-settings', (event) => {
             preload: path.join(__dirname, 'RendererIPC.js')
         }
     });
+    
     sw.loadFile(path.join(__dirname, '../', 'static', 'settings.html'));
     sw.webContents.on('did-finish-load', () => {
         passToSettings();

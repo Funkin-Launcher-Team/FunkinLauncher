@@ -22,12 +22,14 @@ function done() {
     window.location.reload();
 }
 
-var engineName = ['Kade Engine', 'Psych Engine', 'Vanilla / VSlice'];
+var engineName = [];
+var formalName = [];
 
 fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
 .then(response => response.json())
 .then(data => {
     engineName = data.execName;
+    formalName = data.formalName;
 });
 function passData(data) {
     if (data == '') {
@@ -45,7 +47,7 @@ function passData(data) {
         
         var p = document.createElement('p');
         p.className = "en";
-        p.innerText = engineName[parseInt(element.replace('engine',''))];
+        p.innerText = formalName[parseInt(element.replace('engine',''))];
         adiv.appendChild(p);
 
         btngen(parseInt(element.replace('engine','')), adiv);

@@ -121,10 +121,12 @@ var mmiWindow = {
 
 // Get executable names from our build host
 var execName = [];
+var formalName = [];
 request('https://' + dbReadValue('engineSrc') + '/engines.json', (err, res, body) => {
     //console.log(body);
     var json = JSON.parse(body);
     execName = json.execName;
+    formalName = json.formalName;
 });
 
 

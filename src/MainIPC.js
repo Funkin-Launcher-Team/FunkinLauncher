@@ -3,25 +3,23 @@
 function passToSettings() {
     sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
 
-    var arrayOfStuff = [];
+    var arrayOfStuff = ['<table><tr><th>Mod Name</th><th>Engine</th><th>Actions</th></tr>'];
     var allEngines = dbGetAllEngines();
     allEngines.forEach((element) => {
         var enginepather = dbReadValue(element);
         var atLeastOneMod = false;
-        arrayOfStuff.push("<h3>" + execName[parseInt(element.replace('engine', ''))] + "</h3>");
         try {
             fs.readdirSync(path.join(enginepather, 'mods')).forEach((element2) => {
                 if (fs.lstatSync(path.join(enginepather, 'mods', element2)).isDirectory()) {
-                    arrayOfStuff.push("<p>" + element2 + "</p>");
-                    atLeastOneMod = true;
+                    arrayOfStuff.push("<tr><td>" + element2 + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td></tr>');
                 }
             });
         } catch (e) {
-            arrayOfStuff.push("<p>No mods installed for this engine.</p>");
+            // Do not do anything as this engine has no mods
         }
-        if (!atLeastOneMod) arrayOfStuff.push("<p>No mods installed for this engine.</p>");
     });
 
+    arrayOfStuff.push('</table>');
     sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");
     
     return true;

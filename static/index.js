@@ -110,6 +110,7 @@ function importEngine() {
 
 function goto(id) {
     document.getElementById('enginedd').value = id;
+    oic();
 }
 
 var formalName = [];
@@ -137,10 +138,10 @@ fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
         });
     });
 
-document.getElementById('enginedd').onchange = function () {
+function oic() {
     var dropdown = document.getElementById('enginedd');
     var selectedOption = dropdown.value;
-    if (selectedOption == "1") {
+    if (formalName[selectedOption] == 'Psych Engine') {
         document.getElementById('pmm').style.display = '';
     }
     else {
@@ -171,6 +172,7 @@ var csOpen = false;
 setInterval(function() {
     document.getElementById('csv').innerText = formalName[parseInt(document.getElementById('enginedd').value)];
     document.getElementById('le').style.display = csOpen ? 'none' : 'unset';
+    document.getElementById('pmm').style.display = (csOpen) ? 'none' : (formalName[selectedOption] == 'Psych Engine' ? 'unset' : 'none');
 });
 
 document.getElementById('csd').onclick = function() {

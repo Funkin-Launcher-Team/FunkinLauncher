@@ -45,6 +45,9 @@ if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {
 */ 
 // This broke since Noobz4Life now packages the app with asar
 
+// Start server (TODO code the thing)
+const { Server } = require('./Server');
+
 // TODO: this function just acts as bridge but we need a firewall
 function request(url, callback) {
     return require('request')(url, callback);

@@ -1,9 +1,11 @@
 // We do not define anything since this file is evaluated when IPCs are defined.
 // Maybe evaluation isn't the best approach, though.
 
+// construct buttons
 function immb(modName, engineID) {
-    return '<button onclick="removeMod(\'' + modName + '\', \'' + engineID + '\')">Remove</button>';
+    return '<button onclick ="removeMod(\'' + modName + '\', \'' + engineID + '\')">Remove</button>';
 }
+
 function passToSettings() {
     sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
 
@@ -48,8 +50,12 @@ ipcMain.on('import-engine', (event, engineID) => {
     console.log('importing engine...');
     dialog.showOpenDialog(win, { properties: ['openDirectory'] }).then((result) => {
         var src = result.filePaths[0];
+        if (!src || src == '' || src == null || src == undefined) {
+            return;
+        }
+        console.log('importing engine from ' + src);
         dbWriteValue('engine' + engineID, src);
-        eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully\');onGameClose();');
+        eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully!\');onGameClose();');
     });
 });
 
@@ -136,7 +142,7 @@ ipcMain.on('load-mm', (event, engineID) => {
         return;
     }
 
-    exec('start ' + execName[engineID], { cwd: dbReadValue('engine' + engineID) }, (err, stdout, stderr) => {
+    exec('' + execName[engineID] + ' -mm', { cwd: dbReadValue('engine' + engineID) }, (err, stdout, stderr) => {
         if (err) {
             console.error(err);
             win.show();

@@ -111,17 +111,21 @@ h1 {
 }
 
 .settingsBtn {
-    width: 45px;
+    width: 43px;
     height: 45px;
     border: none;
     border-radius: 45px;
-    border: 2px solid black;
+    display: flex;
+    justify-content: left;    
+    align-items: center;
+    border: 1px solid black;
     padding: 5px;
     padding-top: 6px;
-    transition: 0.5s scale;
+    transition: 0.5s width;
+    overflow: hidden;
 }
 .settingsBtn:hover {
-    scale: 1.1;
+    width: 145px;
     cursor: pointer;
 }
 

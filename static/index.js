@@ -164,17 +164,24 @@ setInterval(function() {
     document.getElementById('settingsBtnImg').style.transform = 'rotate(' + deg + 'deg)';
 },1/60);
 
+// custom select dropdown
+
+var csOpen = false;
+
 setInterval(function() {
     document.getElementById('csv').innerText = formalName[parseInt(document.getElementById('enginedd').value)];
+    document.getElementById('le').style.display = csOpen ? 'none' : 'unset';
 });
 
 document.getElementById('csd').onclick = function() {
     document.getElementById('cso').style.height = "100px";
     document.getElementById('cso').style.display = "block";
+    csOpen = true;
 };
 
 document.body.onclick = function(e) {
-    if (e.target.id != 'cso' && e.target.id != 'csd') { 
+    if (e.target.id != 'cso' && e.target.id != 'csd') {
+        csOpen = false;
         document.getElementById('cso').style.height = "0px";
         document.getElementById('cso').style.display = "none";
     }

@@ -11,7 +11,7 @@
  * UNDER NO CIRCUMSTANCES SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
- * Tool published under the MIT license.
+ * Tool published under the CC license (see README).
  * https://gamebanana.com/tools/17526
 */
 
@@ -31,6 +31,7 @@ const { pathToFileURL } = require('url');
 const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath } = require('./Database');
 
 // Migrate 1.4 engines to 1.5
+/*
 if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {
     fs.readdirSync(path.join(__dirname, '../', 'engines')).forEach((element) => {
         dbWriteValue(element, path.join(appDataPath, 'engines', element));
@@ -41,6 +42,8 @@ if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {
         });
     });
 }
+*/ 
+// This broke since Noobz4Life now packages the app with asar
 
 // TODO: this function just acts as bridge but we need a firewall
 function request(url, callback) {

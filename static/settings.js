@@ -106,7 +106,7 @@ function showMods(modsHTML) {
         document.getElementById('mods').innerHTML = 'No engines installed.';
         return;
     }
-    document.getElementById('mods').innerHTML = modsHTML;
+    document.getElementById('mods').innerHTML = atob(modsHTML); // the thing is encrypted
 }
 
 document.getElementById('volSlider').value = localStorage.getItem('volume') * 100;

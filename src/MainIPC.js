@@ -1,8 +1,13 @@
 // We do not define anything since this file is evaluated when IPCs are defined.
+// Maybe evaluation isn't the best approach, though.
 
+function immb(modName, engineID) {
+    return '<button onclick="removeMod(\'' + modName + '\', \'' + engineID + '\')">Remove</button>';
+}
 function passToSettings() {
     sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
 
+    // Define top of the table
     var arrayOfStuff = ['<table><tr><th>Mod Name</th><th>Engine</th><th>Actions</th></tr>'];
     var allEngines = dbGetAllEngines();
     allEngines.forEach((element) => {
@@ -11,7 +16,7 @@ function passToSettings() {
         try {
             fs.readdirSync(path.join(enginepather, 'mods')).forEach((element2) => {
                 if (fs.lstatSync(path.join(enginepather, 'mods', element2)).isDirectory()) {
-                    arrayOfStuff.push("<tr><td>" + element2 + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td></tr>');
+                    arrayOfStuff.push("<tr><td>" + element2 + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td><td>' + immb(element2, element) + '</td></tr>');
                 }
             });
         } catch (e) {
@@ -20,7 +25,7 @@ function passToSettings() {
     });
 
     arrayOfStuff.push('</table>');
-    sw.webContents.executeJavaScript("showMods('" + arrayOfStuff.join('') + "')");
+    sw.webContents.executeJavaScript("showMods('" + btoa(arrayOfStuff.join('')) + "')");
     
     return true;
 }

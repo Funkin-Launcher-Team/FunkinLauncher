@@ -15,6 +15,7 @@
   "build": {
     "productName": "Funkin Launcher",
     "artifactName": "funkin-launcher.${ext}",
+    "asar": false,
     "appId": "net.toperri.FunkinLauncher",
     "win": {
       "target": "zip nsis"

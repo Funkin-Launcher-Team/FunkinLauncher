@@ -53,6 +53,7 @@ h1 {
     position: fixed;
     top: 0;
     height: 100vh;
+    width: 1000px;
     transition: left 0.5s;
 }
 

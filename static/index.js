@@ -11,6 +11,13 @@ var bgm;
 
 // var isGameCloseEventGonnaFireAndTalkAbotuImportedEngine = false;
 
+function openSettings() {
+    var ca = new Audio('confirm.mp3');
+    ca.volume = 0.5;
+    ca.play();
+    window.electronAPI.settings();
+}
+
 function loadEngine() {
     var dropdown = document.getElementById('enginedd');
     var selectedOption = dropdown.value;
@@ -172,7 +179,7 @@ var csOpen = false;
 setInterval(function() {
     document.getElementById('csv').innerText = formalName[parseInt(document.getElementById('enginedd').value)];
     document.getElementById('le').style.display = csOpen ? 'none' : 'unset';
-    document.getElementById('pmm').style.display = (csOpen) ? 'none' : (formalName[selectedOption] == 'Psych Engine' ? 'unset' : 'none');
+    document.getElementById('pmm').style.display = (csOpen) ? 'none' : (formalName[document.getElementById('enginedd').value] == 'Psych Engine' ? 'unset' : 'none');
 });
 
 document.getElementById('csd').onclick = function() {

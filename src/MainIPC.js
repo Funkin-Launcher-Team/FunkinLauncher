@@ -112,6 +112,7 @@ ipcMain.on('open-settings', (event) => {
         resizable: false,
         fullscreenable: false,
         minimizable: false,
+        frame: false,
         webPreferences: {
             nodeIntegration: true,
             preload: path.join(__dirname, 'RendererIPC.js')

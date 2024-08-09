@@ -8,7 +8,6 @@ a { color: white; }
 body {
     background-image: url("./stageback.png");
     margin: 0;
-    margin-left: 10px;
     font-family: "Segoe UI";
     padding: 0px;
     overflow-x: hidden;
@@ -22,7 +21,41 @@ button.usb {
     font-size: 20px;
 }
 
-button {
+.close {
+    background-color: transparent;
+    font-family: "FNF";
+    color: white;
+    border: none;
+    font-size: 20px;
+    height: 30px;
+    width: 30px;
+    margin-right: 5px;
+    transition: 0.5s background-color;
+}
+
+.close:hover {
+    background-color: red;
+}
+
+.titleBar {
+    background-color: rgb(28, 20, 29);
+    color: white;
+    font-family: "FNF";
+    font-size: 20px;
+    padding: 10px;
+    padding-left: 5px;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10px;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    top: 0;
+}
+
+button:not(.close) {
     background-color: rgb(0, 0, 0);
     color: white;
     font-family: "Verdana";
@@ -33,7 +66,7 @@ button {
     transition: background-color 0.3s, color 0.3s;
 }
 
-button:hover {
+button:hover:not(.close) {
     cursor: pointer;
     color: black;
     background-color: white;
@@ -100,8 +133,9 @@ td, th {
 }
 
 .container {
-    margin-left: 5px;
+    margin-left: 25px;
 }
+
 
 .en {
     margin-left: 10px;

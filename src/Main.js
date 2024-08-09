@@ -244,28 +244,49 @@ function downloadEngine(engineID) {
 
 app.whenReady().then(() => {
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
-        var ver = JSON.parse(body).version;
-        var blist = ['Let\'s update','Later (not reccomended)'];
+        if (err) {
+            console.error("Failed to fetch the version data:", err);
+            createWindow();
+            return;
+        }
+        // intCV and AV or whatever the fuck that was hurted my brain
+        const remoteVersion = JSON.parse(body).version;
+        const currentVersion = require('../package.json').version;
 
-        var intCV = parseInt(require('../package.json').version.replace(/\./g, ''));
-        var intAV = parseInt(ver.replace(/\./g, ''));
-        if (Math.max(intCV, intAV) == intAV) {
+        const intRemoteVersion = parseInt(remoteVersion.replace(/\./g, ''));
+        const intCurrentVersion = parseInt(currentVersion.replace(/\./g, ''));
+
+        if (intRemoteVersion > intCurrentVersion) {
             dialog.showMessageBox({
                 title: 'Update available',
-                message: 'An update is available for FNF Launcher. ' + require('../package.json').version + ' -> ' + ver,
-                buttons: blist
+                message: `An update is available for FNF Launcher. ${currentVersion} -> ${remoteVersion}`,
+                buttons: ['Update now', 'Later (not recommended)']
             }).then((result) => {
-                if (result.response == 0) {
-                    shell.openExternal('https://gamebanana.com/tools/17526');
-                    app.quit(0);
-                }
-                if (result.response == 1) {
-                    console.log('User is a fricking geek cuz he used the funny flags');
+                if (result.response === 0) {
+                    dialog.showOpenDialog({
+                        title: 'Select Update Location',
+                        buttonLabel: 'Update Here',
+                        properties: ['openDirectory']
+                    }).then((result) => {
+                        if (result.canceled) {
+                            console.log('User canceled the directory selection');
+                            createWindow();
+                        } else {
+                            const updatePath = result.filePaths[0];
+                            console.log(`Updating at ${updatePath}`);
+                            downloadAndUpdate(updatePath, remoteVersion);
+                        }
+                    }).catch(err => {
+                        console.error('Failed to select update location:', err);
+                        createWindow();
+                    });
+                } else {
+                    console.log('User chose to skip the update.');
                     createWindow();
                 }
             });
-        }
-        else {
+        } else {
+            console.log('No update is needed.');
             createWindow();
         }
     });
@@ -278,5 +299,47 @@ app.whenReady().then(() => {
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
+
+function downloadAndUpdate(updatePath, version) {
+    const downloadURL = ``; // im not making any trouble, add this here toperri. -Hero
+
+    console.log(`Downloading update from ${downloadURL} to ${updatePath}`);
+
+    progress(request(downloadURL))
+        .on('progress', (state) => {
+            console.log(`Download progress: ${Math.round(state.percent * 100)}%`);
+        })
+        .on('error', (err) => {
+            console.error('Download failed:', err);
+            dialog.showMessageBox({
+                title: 'Update Error',
+                message: 'The update failed to download. Please try again later.',
+                buttons: ['OK']
+            });
+            exit(0);
+        })
+        .on('end', () => {
+            console.log('Download complete. Installing update...');
+            zl.extract(downloadURL, updatePath, (err) => {
+                if (err) {
+                    console.error('Failed to extract the update:', err);
+                    return;
+                }
+                console.log('Update installed successfully!');
+                dialog.showMessageBox({
+                    title: 'Update Complete',
+                    message: 'The update has been installed successfully. Please restart the application for the changes to take effect.',
+                    buttons: ['OK']
+                }).then(result => {
+                    if (result.response === 0) {
+                        app.exit(0);
+                    } else {
+                        console.log('User chose to restart later.');
+                    }
+                });
+            });
+        })
+        .pipe(fs.createWriteStream(path.join(updatePath, `FNFLauncher-${version}.zip`)));
+}
 
 module.exports = this;

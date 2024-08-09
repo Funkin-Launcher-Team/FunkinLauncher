@@ -30,23 +30,6 @@ const { title } = require('process');
 const { pathToFileURL } = require('url');
 const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath } = require('./Database');
 
-// Migrate 1.4 engines to 1.5
-/*
-if (fs.existsSync(path.join(__dirname, '../', 'engines'))) {
-    fs.readdirSync(path.join(__dirname, '../', 'engines')).forEach((element) => {
-        dbWriteValue(element, path.join(appDataPath, 'engines', element));
-        move(path.join(__dirname, '../', 'engines', element), path.join(appDataPath, 'engines', element), (err) => {
-            if (err) {
-                console.error(err);
-            }
-        });
-    });
-}
-*/ 
-// This broke since Noobz4Life now packages the app with asar
-
-// Start server (TODO code the thing)
-const { Server } = require('./Server');
 
 // TODO: this function just acts as bridge but we need a firewall
 function request(url, callback) {
@@ -295,94 +278,5 @@ app.whenReady().then(() => {
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
-
-ipcMain.on('security-alert', (event, setHost, host) => {
-    if (!setHost) {
-        dialog.showMessageBox({
-            title: 'Security Alert',
-            message: 'Warning! Third party servers are not controlled by us and may be harmful. We do not take responsibility for any damage caused by third party servers and their content. Please be sure to trust the author of this build host before proceeding.',
-            buttons: ['Ok']
-        });
-    }
-    else {
-        dialog.showMessageBox({
-            title: (host == 'ffm-backend.web.app' ? 'Warning' : 'Security Warning'),
-            message: (host == 'ffm-backend.web.app' ? 'Are you sure you want to make these changes?' : 'Warning! Third party servers are not controlled by us and may be harmful. We do not take responsibility for any damage caused by third party servers and their content. Please be sure to trust the author of this build host before proceeding. Are you sure you want to trust ' + host + ' and use it as your build host?'),
-            buttons: ['Yes','No'],
-            defaultId: 1
-        }).then((result) => {
-            if (result.response == 0) {
-                dbWriteValue('engineSrc', host);
-                dialog.showMessageBox({
-                    message: 'The app will now restart to apply the changes.',
-                }).then(() => {
-                    app.relaunch();
-                    app.quit();
-                });
-            }
-        });
-    }
-});
-
-ipcMain.on('install-mod', (event, url, ed) => {
-    console.log('installing mod...');
-    fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
-
-    if (dbReadValue('engine' + ed) == undefined) {
-        mmi.webContents.executeJavaScript('onEngineNotInstalled();');
-        return;
-    }
-
-    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
-
-    progress(request(url))
-        .on('progress', (state) => {
-            console.log('percent: ' + Math.round(state.percent * 100) + '%');
-            mmi.webContents.executeJavaScript('updateProgress("' + Math.round(state.percent * 100) + '%");');
-        })
-        .on('error', (err) => {
-            console.error(err);
-            mmi.webContents.executeJavaScript('onDownloadError();');
-        })
-        .on('end', () => {
-            zl.extract(downloadPath, path.join(dbReadValue('engine' + ed), 'mods'), (err) => {
-                if (err) {
-                    console.error(err);
-                    mmi.webContents.executeJavaScript('onDownloadError();');
-                    return;
-                }
-                fs.rmSync(downloadPath, { recursive: true });
-            });
-            mmi.webContents.executeJavaScript('onDownloadComplete();');
-        })
-        .pipe(fs.createWriteStream(downloadPath));
-});
-
-/*
-const eapp = express();
-
-eapp.get('/', (req, res) => {
-    var url = req.query.url;
-    mmi = new BrowserWindow({
-        width: 1280,
-        height: 720,
-        resizable: false,
-        fullscreenable: false,
-        minimizable: false,
-        webPreferences: {
-            nodeIntegration: true,
-            preload: path.join(__dirname, '../', 'RendererIPC.js')
-        }
-    });
-    mmi.loadFile(path.join(__dirname, '../', 'static', 'mmi.html'));
-    mmi.webContents.executeJavaScript('receiveUrl("' + url + '");');
-    res.send('ok');
-});
-
-eapp.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
-*/
-// no longer needed
 
 module.exports = this;

@@ -263,23 +263,9 @@ app.whenReady().then(() => {
                 buttons: ['Update now', 'Later (not recommended)']
             }).then((result) => {
                 if (result.response === 0) {
-                    dialog.showOpenDialog({
-                        title: 'Select Update Location',
-                        buttonLabel: 'Update Here',
-                        properties: ['openDirectory']
-                    }).then((result) => {
-                        if (result.canceled) {
-                            console.log('User canceled the directory selection');
-                            createWindow();
-                        } else {
-                            const updatePath = result.filePaths[0];
-                            console.log(`Updating at ${updatePath}`);
-                            downloadAndUpdate(updatePath, remoteVersion);
-                        }
-                    }).catch(err => {
-                        console.error('Failed to select update location:', err);
-                        createWindow();
-                    });
+                    const updatePath = __dirname;
+                    console.log(`Updating at ${updatePath}`);
+                    downloadAndUpdate(updatePath, remoteVersion, JSON.parse(body).vlink);
                 } else {
                     console.log('User chose to skip the update.');
                     createWindow();
@@ -300,8 +286,7 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
 
-function downloadAndUpdate(updatePath, version) {
-    const downloadURL = ``; // im not making any trouble, add this here toperri. -Hero
+function downloadAndUpdate(updatePath, version, downloadURL) {
 
     console.log(`Downloading update from ${downloadURL} to ${updatePath}`);
 
@@ -331,11 +316,7 @@ function downloadAndUpdate(updatePath, version) {
                     message: 'The update has been installed successfully. Please restart the application for the changes to take effect.',
                     buttons: ['OK']
                 }).then(result => {
-                    if (result.response === 0) {
-                        app.exit(0);
-                    } else {
-                        console.log('User chose to restart later.');
-                    }
+                    app.relaunch();
                 });
             });
         })

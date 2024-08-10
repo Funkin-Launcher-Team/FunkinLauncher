@@ -3,6 +3,15 @@
     src: url("./fnf.ttf");
 }
 
+button.erb {
+    width: 25px;
+    border-radius: 25px;
+    border: none;
+    background-color: red;
+    color: white;
+    font-family: "FNF";
+}
+
 a { color: white; }
 
 body {
@@ -60,6 +69,7 @@ button:not(.close) {
     color: white;
     font-family: "Verdana";
     font-size: 14px;
+    min-width: 30px;
     border: none;
     border-radius: 2px;
     padding: 10px;
@@ -145,14 +155,6 @@ td, th {
 @font-face {
     font-family: "FNF2";
     src: url("./fnf-f2.ttf");
-}
-.erb {
-    width: 25px;
-    border-radius: 25px;
-    border: none;
-    background-color: red;
-    color: white;
-    font-family: "FNF";
 }
 
 .install {

@@ -36,6 +36,10 @@ ipcMain.on('log', (event, message) => {
     process.stdout.write('(RENDERER PROCESS) ' + message + '\n');
 });
 
+ipcMain.on('closed-settings', (event) => {
+    win.webContents.executeJavaScript('onCloseSettings();');
+});
+
 ipcMain.on('reload-launcher', (event) => {
     if (win) {
         win.show();
@@ -48,8 +52,8 @@ ipcMain.on('import-engine', (event, engineID) => {
     const webContents = event.sender;
     const eventer = BrowserWindow.fromWebContents(webContents);
     console.log('importing engine...');
-    dialog.showOpenDialog(win, { properties: ['openDirectory'] }).then((result) => {
-        var src = result.filePaths[0];
+    dialog.showOpenDialog(win, { properties: ['openFile'], filters: [{ name: 'FNF Executables', extensions: ['exe'] }], title: 'Select your FNF .exe file' }).then((result) => {
+        var src = path.dirname(result.filePaths[0]);
         if (!src || src == '' || src == null || src == undefined) {
             return;
         }

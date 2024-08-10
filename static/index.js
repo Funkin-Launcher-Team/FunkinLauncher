@@ -11,10 +11,18 @@ var bgm;
 
 // var isGameCloseEventGonnaFireAndTalkAbotuImportedEngine = false;
 
+function onCloseSettings() {
+    var ca = new Audio('cancel.mp3');
+    ca.volume = 0.5;
+    bgm.volume = localStorage.getItem('volume');
+    ca.play();
+}
+
 function openSettings() {
     var ca = new Audio('confirm.mp3');
     ca.volume = 0.5;
     ca.play();
+    bgm.volume = 0.1;
     window.electronAPI.settings();
 }
 

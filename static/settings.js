@@ -17,6 +17,10 @@ function btngen(element, div) {
     div.appendChild(btn);
 }
 
+window.onbeforeunload = function() {
+    window.electronAPI.closedSettings();
+};
+
 function done() {
     window.alert('The engine has been removed successfully.');
     window.location.reload();

@@ -14,4 +14,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   reloadSettings: () => ipcRenderer.send('reload-settings'),
   log: (message) => ipcRenderer.send('log', message),
   securityAlert: (setHost, host) => ipcRenderer.send('security-alert', setHost, host),
+  closedSettings: () => ipcRenderer.send('closed-settings'),
 })

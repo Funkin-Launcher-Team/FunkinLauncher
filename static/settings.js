@@ -117,7 +117,7 @@ document.getElementById('volSlider').value = localStorage.getItem('volume') * 10
 
 function apply() {
     localStorage.setItem('volume', document.getElementById('volSlider').value / 100);
-    window.electronAPI.reloadLauncher();
+    window.alert('You will have to close the settings to apply the changes.');
 }
 
 document.getElementById('bh').value = localStorage.getItem('engineSrc');

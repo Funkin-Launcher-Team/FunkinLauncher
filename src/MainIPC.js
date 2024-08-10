@@ -36,16 +36,11 @@ ipcMain.on('log', (event, message) => {
     process.stdout.write('(RENDERER PROCESS) ' + message + '\n');
 });
 
+/*
 ipcMain.on('closed-settings', (event) => {
     win.webContents.executeJavaScript('onCloseSettings();');
 });
-
-ipcMain.on('reload-launcher', (event) => {
-    if (win) {
-        win.show();
-        win.webContents.executeJavaScript('window.location.reload();');
-    }
-});
+*/
 
 ipcMain.on('import-engine', (event, engineID) => {
     // prompt user to select a folder
@@ -126,6 +121,9 @@ ipcMain.on('open-settings', (event) => {
     sw.loadFile(path.join(__dirname, '../', 'static', 'settings.html'));
     sw.webContents.on('did-finish-load', () => {
         passToSettings();
+    });
+    sw.on('closed', () => {
+        win.webContents.executeJavaScript('onCloseSettings();');
     });
 });
 

@@ -16,6 +16,9 @@ function onCloseSettings() {
     ca.volume = 0.5;
     bgm.volume = localStorage.getItem('volume');
     ca.play();
+    ca.onended = function() {
+        location.reload();
+    };
 }
 
 function openSettings() {
@@ -78,8 +81,9 @@ function onGameClose() {
     document.getElementById('settings').disabled = false;
 }
 
-function updateProgress(percent) {
+function updateProgress(percent, mbs) {
     targetProgress = percent;
+    document.getElementById('mbs').innerText = mbs + ' MB/s';
 }
 
 function onDownloadError() {

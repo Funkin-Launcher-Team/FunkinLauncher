@@ -15,7 +15,7 @@
  * https://gamebanana.com/tools/17526
 */
 
-const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell, Notification } = require('electron');
 const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs');
@@ -53,19 +53,6 @@ if (!fs.existsSync(path.join(appDataPath, 'logs'))) {
 }
 
 var logStream = fs.createWriteStream(path.join(appDataPath, 'logs', formattedDate() + '.log'), { flags: 'w' });
-
-// Better logs to terminal
-
-const oldLog = console.log;
-console.log = function (d) {
-    const stack = new Error().stack.split('\n');
-    const caller = stack[2].trim().split(' ');
-    const fileName = caller[1].split('/').pop();
-    const lineNumber = caller[caller.length - 1].split(':')[1];
-    const logMessage = `${lineNumber.replace(__dirname, '')} ${d}`;
-    logStream.write(logMessage + '\n');
-    process.stdout.write(chalk.red(lineNumber.replace(__dirname, '')) + ': ' + d + '\n\n');
-};
 
 
 // Window configuration
@@ -183,13 +170,14 @@ function createWindow() {
     if (launchLauncher) {
         win.loadURL(path.join(__dirname, '../', 'static', 'index.html'));
         win.webContents.on('did-finish-load', () => {
-            win.webContents.executeJavaScript('versionPass("' + require('../package.json').version + '");');
+            win.webContents.executeJavaScript('versionPass("' + require('../package.json').version + (process.argv.includes('frombatch') ? '-BETA' : '') + '");');
             win.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");');
         });
     }
 
     //win.webContents.executeJavaScript('window.alert("' + process.argv.join(',') + '")');
 }
+
 function downloadEngine(engineID) {
     console.log('installing some engines today...');
 
@@ -212,10 +200,14 @@ function downloadEngine(engineID) {
         const downloadURL = "https://" + dbReadValue('engineSrc') + "/e" + engineID + ".zip";
         console.log(downloadURL);
 
+        var startTime = Date.now();
+
         progress(request(downloadURL))
             .on('progress', (state) => {
                 console.log('percent: ' + Math.round(state.percent * 100) + '%');
-                win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ');');
+                var elapsedTime = Date.now() - startTime;
+                var dlspeed = Math.round((state.size.transferred / elapsedTime) / (1024 * 1024) * 1000) / 1000;
+                win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ', ' + dlspeed + ');');
             })
             .on('error', (err) => {
                 console.error(err);
@@ -232,6 +224,12 @@ function downloadEngine(engineID) {
                     fs.rmSync(downloadPath, { recursive: true });
                 });
                 win.webContents.executeJavaScript('onDownloadComplete();');
+                const notification = new Notification({
+                    title: 'Download Complete',
+                    body: 'The engine download is complete.',
+                });
+
+                notification.show();
             })
             .pipe(fs.createWriteStream(downloadPath));
     }).catch(err => {

@@ -292,18 +292,8 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
 
-function downloadAndUpdate() {
-    dialog.showOpenDialog(win, {
-        properties: ['openDirectory']
-    }).then(result => {
-        if (result.canceled) {
-            console.log('User canceled the directory selection');
-            return;
-        }
-
-        const selectedPath = result.filePaths[0];
-        const downloadURL = 'idk'; // Replace with your update URL toperri.
-        const zipPath = path.join(selectedPath, 'update.zip');
+function downloadAndUpdate(selectedPath, remoteVersion, downloadURL) {
+        const zipPath = path.join(selectedPath, btoa(remoteVersion).replace('=','') + '_update.zip');
 
         console.log(`Downloading update from ${downloadURL} to ${zipPath}`);
 
@@ -342,10 +332,6 @@ function downloadAndUpdate() {
                     });
             })
             .pipe(fs.createWriteStream(zipPath));
-
-    }).catch(err => {
-        console.error('Failed to select directory:', err);
-    });
 }
 
 

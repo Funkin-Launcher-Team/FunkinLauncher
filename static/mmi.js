@@ -3,6 +3,7 @@ console.log = function (...args) {
 }
 
 var modEngine = '1';
+var ft = "";
 
 async function analyzePackage(url, type, id) {
     var info = {};
@@ -10,6 +11,7 @@ async function analyzePackage(url, type, id) {
         .then(a => a.json())
         .then(fileInfo => {
             info = fileInfo;
+            ft = info._sFile.split('.')[info._sFile.split('.').length - 1];
         });
 
     // Phase 1: Check if the mod is for the correct engine
@@ -98,7 +100,7 @@ function installMod() {
 
     document.getElementsByClassName('download')[0].style.display = 'block';
     document.getElementsByClassName('launcher')[0].style.display = 'none';
-    window.electronAPI.installMod(window.url,selectedOption);
+    window.electronAPI.installMod(window.url,selectedOption,ft);
 }
 
 function updateProgress(percent) {
@@ -107,6 +109,11 @@ function updateProgress(percent) {
 
 function onDownloadError() {
     window.alert('An error occurred while downloading the mod.');
+    window.close();
+}
+
+function onExtractionFailed() {
+    window.alert('An error occurred while extracting the mod. Please try again or report this issue.');
     window.close();
 }
 

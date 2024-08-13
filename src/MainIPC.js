@@ -1,6 +1,8 @@
 // We do not define anything since this file is evaluated when IPCs are defined.
 // Maybe evaluation isn't the best approach, though.
 
+const { extract } = require("zip-lib");
+
 // construct buttons
 function immb(modName, engineID) {
     return '<button onclick ="removeMod(\'' + modName + '\', \'' + engineID + '\')">Remove</button>';
@@ -186,7 +188,7 @@ ipcMain.on('security-alert', (event, setHost, host) => {
     }
 });
 
-ipcMain.on('install-mod', (event, url, ed) => {
+ipcMain.on('install-mod', (event, url, ed, ft) => {
     console.log('installing mod...');
     fs.mkdirSync(path.join(appDataPath, 'downloads'), { recursive: true });
 
@@ -195,7 +197,7 @@ ipcMain.on('install-mod', (event, url, ed) => {
         return;
     }
 
-    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.zip');
+    const downloadPath = path.join(appDataPath, 'downloads', 'mod-' + btoa(url) + '.' + ft);
 
     progress(request(url))
         .on('progress', (state) => {
@@ -207,15 +209,15 @@ ipcMain.on('install-mod', (event, url, ed) => {
             mmi.webContents.executeJavaScript('onDownloadError();');
         })
         .on('end', () => {
-            zl.extract(downloadPath, path.join(dbReadValue('engine' + ed), 'mods'), (err) => {
-                if (err) {
-                    console.error(err);
-                    mmi.webContents.executeJavaScript('onDownloadError();');
-                    return;
+            (async function () {
+                var didWork = await extractFile(downloadPath, path.join(dbReadValue('engine' + ed), 'mods'));
+                if (didWork) {
+                    mmi.webContents.executeJavaScript('onDownloadComplete();');
                 }
-                fs.rmSync(downloadPath, { recursive: true });
-            });
-            mmi.webContents.executeJavaScript('onDownloadComplete();');
+                else {
+                    mmi.webContents.executeJavaScript('onExtractionFailed();');
+                }
+            })();
         })
         .pipe(fs.createWriteStream(downloadPath));
 });

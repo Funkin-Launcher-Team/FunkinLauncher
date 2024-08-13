@@ -8,7 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openEngineFolder: () => ipcRenderer.send('open-engine-folder'),
   openLogsFolder: () => ipcRenderer.send('open-logs-folder'),
   settings: () => ipcRenderer.send('open-settings'),
-  installMod: (url, ed) => ipcRenderer.send('install-mod', url, ed),
+  installMod: (url, ed, ft) => ipcRenderer.send('install-mod', url, ed, ft),
   importEngine: (engineID) => ipcRenderer.send('import-engine', engineID),
   reloadLauncher: () => ipcRenderer.send('reload-launcher'),
   reloadSettings: () => ipcRenderer.send('reload-settings'),

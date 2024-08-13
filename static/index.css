@@ -163,14 +163,18 @@ h1 {
     cursor: pointer;
 }
 #bgvE {
-    width: 100%;
+    width: 140%;
     margin-bottom: 20px;
-    height: 100%;
+    height: 140%;
+    position: fixed;
+    filter: blur(15px);
+    top: -15px;
 }
 .bgvE {
     width: 100%;
     height: 100%;
     margin-bottom: 20px;
+    filter: blur(10px);
 }
 .top {
     text-align: center;

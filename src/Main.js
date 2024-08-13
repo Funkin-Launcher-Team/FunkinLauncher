@@ -24,6 +24,7 @@ const chalk = require('chalk');
 const progress = require('request-progress');
 const URL = require('lite-url');
 const zl = require("zip-lib");
+const zipLib = require("zip-lib");
 const rar = require("unrar");
 const seven = require('node-7z');
 const express = require('express');
@@ -196,7 +197,7 @@ function downloadEngine(engineID) {
 
         const selectedPath = result.filePaths[0];
         const downloadPath = path.join(selectedPath, `temp_e${engineID}.zip`);
-        const extractPath = path.join(selectedPath, `engine_${engineID}`);
+        const extractPath = path.join(selectedPath);
 
         fs.mkdirSync(selectedPath, { recursive: true });
 
@@ -361,8 +362,10 @@ async function extractFile(filePath, outputDir) {
         }
 
         console.log('Extraction complete');
+        return true;
     } catch (err) {
         console.error('Extraction failed:', err);
+        return false;
     }
 }
 

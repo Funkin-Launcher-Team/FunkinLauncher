@@ -7,6 +7,10 @@ a {
     color: white;
 }
 
+.cslink {
+    margin-top: 1px;
+}
+
 .cso {
     position: relative;
     bottom: 0;
@@ -17,7 +21,7 @@ a {
     font-size: 15px;
     width: 50%;
     text-align: left;
-    padding: 5px;
+    padding: 10px;
     z-index: 10;
     padding: 5px;
     display: none;

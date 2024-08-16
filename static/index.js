@@ -150,10 +150,13 @@ fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
                 document.getElementById('cso').innerHTML += '<br>';
             }
             var link = document.createElement('a');
+            link.class = "cslink";
             link.style.marginLeft = '5px';
             link.href = 'javascript:goto("' + engine.id + '")';
             link.innerText = formalName[engine.id];
-            document.getElementById('cso').appendChild(link);
+            var pl = document.createElement('span');
+            pl.appendChild(link);
+            document.getElementById('cso').appendChild(pl);
         });
     });
 

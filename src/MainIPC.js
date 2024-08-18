@@ -44,6 +44,11 @@ ipcMain.on('closed-settings', (event) => {
 });
 */
 
+ipcMain.on('remove-mod', (event, mod, engine) => {
+    console.log(path.join(dbReadValue('engine' + engine), 'mods', mod));
+    fs.rmSync(path.join(dbReadValue('engine' + engine), 'mods', mod), { recursive: true });
+});
+
 ipcMain.on('import-engine', (event, engineID) => {
     // prompt user to select a folder
     const webContents = event.sender;

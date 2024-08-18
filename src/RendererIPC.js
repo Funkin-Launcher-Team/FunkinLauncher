@@ -15,4 +15,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   log: (message) => ipcRenderer.send('log', message),
   securityAlert: (setHost, host) => ipcRenderer.send('security-alert', setHost, host),
   closedSettings: () => ipcRenderer.send('closed-settings'),
+  removeMod: (mod, engine) => ipcRenderer.send('remove-mod', mod, engine),
 })

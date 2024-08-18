@@ -65,9 +65,18 @@ a {
     }
 }
 
+table {
+    border: 2px solid white;
+    padding: 5px;
+    border-radius: 4px;
+}
 td, th {
+    margin: 3px;
+    padding: 7px;
+}
+td {
     padding: 10px;
-    border: 1px solid white;
+    border-top: 3px dotted white;
 }
 
 h1 {
@@ -89,12 +98,10 @@ h1 {
     height: 100vh;
     display: none;
     background-color: black;
-    opacity: 0;
+    opacity: 0.8;
     transition: 0.7s opacity;
 }
-.license.open {
-    opacity: 0.8;
-}
+
 .licenseContents {
     color: white;
     font-family: 'Arial', sans-serif;
@@ -102,7 +109,7 @@ h1 {
 }
 
 .container {
-    animation: 0.9s ease-in-out 0s 1 onOpenLauncher;
+    animation: 1.5s cubic-bezier(0.83, 0, 0.17, 1) 0s 1 onOpenLauncher;
     display: flex;
     position: fixed;
     top: 0;
@@ -110,7 +117,6 @@ h1 {
     height: 100vh;
     transition: left 0.5s;
 }
-
 .container.loaded {
     left: 0;
 }
@@ -187,9 +193,12 @@ h1 {
     background-image: url("./gridLoop.png");
     filter: blur(5px);
     position: fixed;
-    width: 100vw;
-    height: 100vh;
-    animation: blurBG 70s linear infinite;
+    width: 140vw;
+    transform: rotate(-4deg);
+    height: 140vh;
+    top: -20vh;
+    left: -3vw;
+    animation: blurBG 60s linear infinite;
 }
 
 .top {

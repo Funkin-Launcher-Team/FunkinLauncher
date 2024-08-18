@@ -26,6 +26,14 @@ function done() {
     window.location.reload();
 }
 
+function removeMod(mod,engine) {
+    if (window.confirm('Are you sure you want to delete "' + mod + '"?')) {
+        window.electronAPI.removeMod(mod, engine.replace('engine',''));
+        window.alert('The mod has been removed successfully.');
+        window.location.reload();
+    }
+}
+
 var engineName = [];
 var formalName = [];
 

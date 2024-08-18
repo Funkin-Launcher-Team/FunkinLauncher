@@ -170,4 +170,7 @@ setInterval(calculateFPS, 1000);
 
 */
 
-window.camera.init(105,70);
+var audio = new Audio('./settingsBGM.mp3');
+audio.volume = 0.5;
+audio.loop = true;
+audio.play();

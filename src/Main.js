@@ -23,9 +23,10 @@ const fs = require('fs');
 const chalk = require('chalk');
 const progress = require('request-progress');
 const URL = require('lite-url');
+const { extractor, createExtractorFromFile } = require('node-unrar-js');
 const zl = require("zip-lib");
 const zipLib = require("zip-lib");
-const rar = require("unrar");
+const unrar = require("unrar");
 const seven = require('node-7z');
 const express = require('express');
 const e = require('express');
@@ -68,6 +69,7 @@ var launcherWindow = {
     width: 1280,
     height: 720,
     resizable: false,
+    fullscreen: false,
     fullscreenable: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
@@ -391,12 +393,32 @@ function extractZip(filePath, outputDir) {
     return zipLib.extract(filePath, outputDir);
 }
 
+async function __rarExtract(file, destination) {
+    try {
+      // Create the extractor with the file information (returns a promise)
+      const extractor = await createExtractorFromFile({
+        filepath: file,
+        targetPath: destination
+      });
+  
+      // Extract the files
+      [...extractor.extract().files];
+
+      return "";
+    } catch (err) {
+      // May throw UnrarError, see docs
+      console.error(err);
+      return err;
+    }
+  }
+
+  
 function extractRar(filePath, outputDir) {
     return new Promise((resolve, reject) => {
-        unrar.extract(filePath, outputDir, (err) => {
-            if (err) return reject(err);
+        (async () => {
+            var thing = await __rarExtract(filePath, outputDir);
             resolve();
-        });
+        })();
     });
 }
 

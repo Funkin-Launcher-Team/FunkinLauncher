@@ -46,6 +46,7 @@
     "fs-move": "^6.0.0",
     "lite-url": "^1.0.5",
     "node-7z": "^3.0.0",
+    "node-unrar-js": "^2.0.2",
     "progress": "^2.0.3",
     "request": "^2.88.2",
     "request-progress": "^3.0.0",

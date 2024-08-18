@@ -16,16 +16,13 @@ function onCloseSettings() {
     ca.volume = 0.5;
     bgm.volume = localStorage.getItem('volume');
     ca.play();
-    ca.onended = function() {
-        location.reload();
-    };
 }
 
 function openSettings() {
     var ca = new Audio('confirm.mp3');
     ca.volume = 0.5;
     ca.play();
-    bgm.volume = 0.1;
+    bgm.volume = 0;
     window.electronAPI.settings();
 }
 
@@ -193,8 +190,6 @@ var csOpen = false;
 
 setInterval(function() {
     document.getElementById('csv').innerText = formalName[parseInt(document.getElementById('enginedd').value)];
-    document.getElementById('le').style.display = csOpen ? 'none' : 'unset';
-    document.getElementById('pmm').style.display = (csOpen) ? 'none' : (formalName[document.getElementById('enginedd').value] == 'Psych Engine' ? 'unset' : 'none');
 });
 
 document.getElementById('csd').onclick = function() {
@@ -207,6 +202,9 @@ document.body.onclick = function(e) {
     if (e.target.id != 'cso' && e.target.id != 'csd') {
         csOpen = false;
         document.getElementById('cso').style.height = "0px";
-        document.getElementById('cso').style.display = "none";
+        document.getElementById('cso').style.display = "block";
     }
 }
+
+document.getElementById('cso').style.height = "0px";
+document.getElementById('cso').style.display = "block";

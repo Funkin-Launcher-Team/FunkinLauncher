@@ -14,7 +14,7 @@ a {
 .cso {
     position: relative;
     bottom: 0;
-    height: 0px;
+    overflow: hidden;
     background-color: rgb(13, 11, 14);
     margin: 0 auto;
     font-family: 'Segoe UI', sans-serif;
@@ -24,7 +24,7 @@ a {
     padding: 10px;
     z-index: 10;
     padding: 5px;
-    display: none;
+    transition: 0.3s height;
 }
 .cSelect {
     background-color: rgb(13, 11, 14);
@@ -166,27 +166,39 @@ h1 {
     color: white;
     cursor: pointer;
 }
+/*
 #bgvE {
-    width: 140%;
-    margin-bottom: 20px;
-    height: 140%;
     position: fixed;
-    filter: blur(15px);
-    top: -15px;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
 }
-.bgvE {
-    width: 100%;
-    height: 100%;
-    margin-bottom: 20px;
-    filter: blur(10px);
+*/
+@keyframes blurBG {
+    0% {
+        background-position: 0px 0px;
+    }
+    100% {
+        background-position: 1000px 0px;
+    }
 }
+.blur {
+    background-image: url("./gridLoop.png");
+    filter: blur(5px);
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    animation: blurBG 70s linear infinite;
+}
+
 .top {
     text-align: center;
     color: white;
     font-family: 'Roboto', sans-serif;
     width: 50%;
-    background-color: rgb(37, 30, 39);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background-color: rgba(37, 30, 39,0.8);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
 }
 h1,h2,h3,h4,h5,h6 {
     font-family: "FNF";

@@ -47,6 +47,8 @@ function isHealthy(url) {
     return true;
 }
 
+var konamiClosed = false;
+
 function formattedDate() {
     var date = new Date(Date.now());
     return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getHours() + '-' + date.getMinutes() + '-logs';
@@ -211,9 +213,7 @@ function downloadEngine(engineID) {
         progress(request(downloadURL))
             .on('progress', (state) => {
                 console.log('percent: ' + Math.round(state.percent * 100) + '%');
-                var elapsedTime = Date.now() - startTime;
-                var dlspeed = Math.round((state.size.transferred / elapsedTime) / (1024 * 1024) * 1000) / 1000;
-                win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ', ' + dlspeed + ');');
+                win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ');');
             })
             .on('error', (err) => {
                 console.error(err);
@@ -292,7 +292,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
+    if (process.platform !== 'darwin' && !konamiClosed) app.quit();
 });
 
 function downloadAndUpdate(selectedPath, remoteVersion, downloadURL) {

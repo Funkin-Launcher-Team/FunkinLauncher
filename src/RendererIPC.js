@@ -16,4 +16,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   securityAlert: (setHost, host) => ipcRenderer.send('security-alert', setHost, host),
   closedSettings: () => ipcRenderer.send('closed-settings'),
   removeMod: (mod, engine) => ipcRenderer.send('remove-mod', mod, engine),
+  randomizeWindow: () => ipcRenderer.send('randomize-window'),
+  konamiWinClose: () => ipcRenderer.send('konami-win-close'),
 })

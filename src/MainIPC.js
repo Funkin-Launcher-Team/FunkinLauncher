@@ -38,6 +38,22 @@ ipcMain.on('log', (event, message) => {
     process.stdout.write('(RENDERER PROCESS) ' + message + '\n');
 });
 
+function randomNumber(min,max) {
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+ipcMain.on('randomize-window', (event) => {
+    var sender = BrowserWindow.fromWebContents(event.sender);
+    sender.setSize(randomNumber(800, 1200), randomNumber(600, 800));
+    sender.setPosition(randomNumber(0, 1920), randomNumber(0, 1080));
+});
+
+ipcMain.on('konami-win-close', (event) => {
+    konamiClosed = true;
+    var sender = BrowserWindow.fromWebContents(event.sender);
+    sender.close();
+    app.quit();
+});
+
 /*
 ipcMain.on('closed-settings', (event) => {
     win.webContents.executeJavaScript('onCloseSettings();');

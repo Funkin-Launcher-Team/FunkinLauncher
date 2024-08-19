@@ -189,7 +189,7 @@ h1 {
         background-position: 1000px 0px;
     }
 }
-.blur {
+.blur:not(.konami) {
     background-image: url("./gridLoop.png");
     filter: blur(5px);
     position: fixed;
@@ -200,7 +200,16 @@ h1 {
     left: -3vw;
     animation: blurBG 60s linear infinite;
 }
-
+.blur.konami {
+    background-image: url("./gridLoop.png");
+    filter: hue-rotate(90deg);
+    position: fixed;
+    width: 140vw;
+    transform: rotate(-4deg);
+    height: 140vh;
+    top: -20vh;
+    left: -3vw;
+}
 .top {
     text-align: center;
     color: white;

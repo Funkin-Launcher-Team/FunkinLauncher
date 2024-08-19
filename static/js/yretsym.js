@@ -12,6 +12,8 @@ function runKonami() {
     bgm.volume = 1; // Set the volume to maximum
     let counter = 0;
 
+    window.state = 'KonamiState';
+
     // Add the 'konami' class to the element with id "logoImg"
     document.getElementById('logoImg').src = 'glitchyLogo.png';
     document.getElementById('blur').classList.add('konami');

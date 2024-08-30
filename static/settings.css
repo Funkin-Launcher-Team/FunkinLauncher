@@ -4,7 +4,7 @@
 }
 
 button.erb {
-    width: 25px;
+    width: 80px;
     border-radius: 25px;
     border: none;
     background-color: red;
@@ -132,6 +132,7 @@ input {
 
 table {
     border-collapse: collapse;
+    border-radius: 2px;
     width: 95%;
     text-align: center;
     border: 1px solid white;

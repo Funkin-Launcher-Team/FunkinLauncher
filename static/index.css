@@ -7,6 +7,13 @@ a {
     color: white;
 }
 
+.noSelect {
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+
 .cslink {
     margin-top: 1px;
 }
@@ -17,7 +24,7 @@ a {
     overflow: hidden;
     background-color: rgb(13, 11, 14);
     margin: 0 auto;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 15px;
     width: 50%;
     text-align: left;
@@ -33,7 +40,7 @@ a {
     margin: 0 auto;
     padding-left: 10px;
     width: 50%;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 15px;
     padding: 5px;
     border-radius: 2px;
@@ -67,6 +74,7 @@ a {
 
 table {
     border: 2px solid white;
+    border-radius: 2px;
     padding: 5px;
     border-radius: 4px;
 }
@@ -150,7 +158,7 @@ h1 {
     font-size: 15px;
     border-radius: 2px;
     border: black;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     transition: 0.3s scale;
 }
 .ver {
@@ -159,7 +167,7 @@ h1 {
     color: white;
     left: 15px;
     font-size: 12px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 .settings {
     position: fixed;
@@ -213,7 +221,7 @@ h1 {
 .top {
     text-align: center;
     color: white;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     width: 50%;
     background-color: rgba(37, 30, 39,0.8);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);

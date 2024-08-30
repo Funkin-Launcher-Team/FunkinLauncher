@@ -9,6 +9,7 @@ An AIO tool for managing FNF installations.
     <th><a href="https://www.errico.dev/?ref=flauncher">toperri</a></th>
     <th><a href="https://heroeyad.github.io/">HeroEyad</a></th>
     <th><a href="https://x.com/Sector03_">Sector03</a></th>
+    <th><a href="https://x.com/Kacaro_">Kacaro</a></th>
   </tr>
   <tr>
     <td>
@@ -20,11 +21,15 @@ An AIO tool for managing FNF installations.
     <td>
        <img src="art/sector.png" alt="Sector03" width="90" height="90">
     </td>
+    <td>
+       <img src="art/kacaro.png" alt="Kacaro_" width="90" height="90">
+    </td>
   </tr>
   <tr>
     <td>Programmer</td>
     <td>Programmer</td>
     <td>Artist</td>
+    <td>Musician</td>
   </tr>
 </table>
 
@@ -57,3 +62,5 @@ Since this app is built on Electron, you will need to install <a href="https://n
 # License
 
 This work is licensed under CC BY-NC-SA 4.0. That means you may redistribute this work and modify it as long as you credit all of the developers of the launcher.
+
+The settings song however is copyrighted and is sole property of Kacaro.

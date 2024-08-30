@@ -6,7 +6,7 @@ var onHellYeah = function(){};
 var onNope = function(){};
 function btngen(element, div) {
     var btn = document.createElement('button');
-    btn.innerHTML = '<b>X</b>';
+    btn.innerHTML = '<b>Remove</b>';
     btn.className = 'erb';
     btn.onclick = function() {
         if (window.confirm('Are you sure?')) {
@@ -182,3 +182,5 @@ var audio = new Audio('./settingsBGM.mp3');
 audio.volume = 0.5;
 audio.loop = true;
 audio.play();
+
+window.alert('NOTICE: the music is WiP and is not final.');

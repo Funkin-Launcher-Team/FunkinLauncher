@@ -20,6 +20,9 @@ function passToSettings() {
         try {
             fs.readdirSync(path.join(enginepather, 'mods')).forEach((element2) => {
                 if (fs.lstatSync(path.join(enginepather, 'mods', element2)).isDirectory()) {
+                    if (element2 == 'introMod') {
+                        return; // intromod is a default mod and should not be shown
+                    }
                     arrayOfStuff.push("<tr><td>" + element2 + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td><td>' + immb(element2, element) + '</td></tr>');
                 }
             });

@@ -140,11 +140,6 @@ function importEngine() {
     window.electronAPI.importEngine(document.getElementById('enginedd').value);
 }
 
-function goto(id) {
-    document.getElementById('enginedd').value = id;
-    oic();
-}
-
 var formalName = [];
 var i = -1;
 fetch("https://" + localStorage.getItem('engineSrc') + "/engines.json")
@@ -213,22 +208,38 @@ setInterval(function() {
     document.getElementById('csv').innerText = formalName[parseInt(document.getElementById('enginedd').value)];
 });
 
-document.getElementById('csd').onclick = function() {
-    document.getElementById('cso').style.height = "100px";
-    document.getElementById('cso').style.display = "block";
-    csOpen = true;
-};
+var isOpen = false;
+
+function toggleDrop(forceState, state) {
+    if (forceState == "yes") {
+        isOpen = state;
+        document.getElementById('cso').style.display = isOpen ? "block" : "none";
+    }
+    else {
+        isOpen = !isOpen;
+        document.getElementById('cso').style.display = isOpen ? "block" : "none";
+    }
+}
+function goto(id) {
+    document.getElementById('enginedd').value = id;
+    // TODO: find out why toggleDrop is not working
+    isOpen = false;
+    document.getElementById('cso').style.display = isOpen ? "block" : "none";
+    oic();
+}
+document.getElementById('csd').onclick = toggleDrop;
+document.getElementById('csv').onclick = toggleDrop;
+document.getElementById('csdi').onclick = toggleDrop;
 
 document.body.onclick = function(e) {
-    if (e.target.id != 'cso' && e.target.id != 'csd') {
-        csOpen = false;
-        document.getElementById('cso').style.height = "0px";
-        document.getElementById('cso').style.display = "block";
+    if (e.target.id != 'cso' && e.target.id != 'csd' && e.target.id != 'csdi') {
+        toggleDrop("yes", false);
     }
 }
 
-document.getElementById('cso').style.height = "0px";
-document.getElementById('cso').style.display = "block";
+document.getElementById('cso').style.height = "100px";
+document.getElementById('cso').style.display = "none";
+isOpen = false; // just for safety??
 
 function randomString(length) {
     let result = '';

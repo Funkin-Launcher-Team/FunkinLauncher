@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Funkin Launcher</title>
 </head>
@@ -24,15 +24,15 @@
             <img src="./logo.gif" alt="" width="400px" id="logoImg">
             <br>
             <div class="launcher">
-                <p>Select your <b>engine</b>:</p>
+                <p class="noSelect">Select your <b>engine</b>:</p>
                 <select id="enginedd" style="display: none;">
                     
                 </select>
                 <div class="cSelect" id="csd">
-                    <p id="csv" style="margin-left: 5px;"></p>
-                    <img src="./down.svg" alt="" width="20px" style="margin-right: 5px;">
+                    <p id="csv" style="margin-left: 5px;" class="noSelect"></p>
+                    <img src="./down.svg" alt="" width="20px" style="margin-right: 5px;" id="csdi" class="noSelect">
                 </div>
-                <div class="cso" id="cso">
+                <div class="cso" id="cso" style="display: none;">
 
                 </div>
                 <br>
@@ -82,6 +82,7 @@
                       <th>toperri</th>
                       <th>HeroEyad</th>
                       <th>Sector03</th>
+                      <th>Kacaro</th>
                     </tr>
                     <tr>
                       <td>
@@ -93,11 +94,15 @@
                       <td>
                          <img src="../art/sector.png" alt="Sector03" width="90" height="90">
                       </td>
+                      <td>
+                        <img src="../art/kacaro.jpg" alt="Kacaro" width="90" height="90">
+                      </td>
                     </tr>
                     <tr>
                       <td>Programmer</td>
                       <td>Programmer</td>
                       <td>Artist</td>
+                      <td>Musician</td>
                     </tr>
                   </table>
             </div>
@@ -108,6 +113,5 @@
         </div>
     </div>
     <script src="index.js"></script>
-    <script src="js/yretsym.js"></script>
 </body>
 </html>

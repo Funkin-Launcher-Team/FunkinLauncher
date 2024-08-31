@@ -4,8 +4,8 @@
 const { extract } = require("zip-lib");
 
 // construct buttons
-function immb(modName, engineID) {
-    return '<button onclick ="removeMod(\'' + modName + '\', \'' + engineID + '\')">Remove</button>';
+function immb(modName, engineID, shownName) {
+    return '<button onclick ="removeMod(\'' + modName + '\', \'' + engineID + '\', \'' + shownName + '\')">Remove</button>';
 }
 
 function passToSettings() {
@@ -23,7 +23,14 @@ function passToSettings() {
                     if (element2 == 'introMod') {
                         return; // intromod is a default mod and should not be shown
                     }
-                    arrayOfStuff.push("<tr><td>" + element2 + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td><td>' + immb(element2, element) + '</td></tr>');
+                    if (element == 'engine1') {
+                        // Read Psych Engine's pack.json
+                        var pack = fs.readFileSync(path.join(enginepather, 'mods', element2, 'pack.json'), 'utf8');
+                        arrayOfStuff.push("<tr><td>" + JSON.parse(pack).name + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td><td>' + immb(element2, element, JSON.parse(pack).name) + '</td></tr>');
+                    }
+                    else {
+                        arrayOfStuff.push("<tr><td>" + element2 + "</td><td>" + formalName[parseInt(element.replace('engine', ''))] + '</td><td>' + immb(element2, element, element2) + '</td></tr>');
+                    }
                 }
             });
         } catch (e) {

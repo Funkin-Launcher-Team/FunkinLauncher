@@ -26,8 +26,8 @@ function done() {
     window.location.reload();
 }
 
-function removeMod(mod,engine) {
-    if (window.confirm('Are you sure you want to delete "' + mod + '"?')) {
+function removeMod(mod,engine,shownName) {
+    if (window.confirm('Are you sure you want to delete "' + shownName + '"? This action cannot be undone.')) {
         window.electronAPI.removeMod(mod, engine.replace('engine',''));
         window.alert('The mod has been removed successfully.');
         window.location.reload();
@@ -178,9 +178,7 @@ setInterval(calculateFPS, 1000);
 
 */
 
-var audio = new Audio('./settingsBGM.mp3');
+var audio = new Audio('./settings.ogg');
 audio.volume = 0.5;
 audio.loop = true;
 audio.play();
-
-window.alert('NOTICE: the music is WiP and is not final.');

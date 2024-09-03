@@ -22,7 +22,7 @@ An AIO tool for managing FNF installations.
        <img src="art/sector.png" alt="Sector03" width="90" height="90">
     </td>
     <td>
-       <img src="art/kacaro.png" alt="Kacaro_" width="90" height="90">
+       <img src="art/kacaro.jpg" alt="Kacaro_" width="90" height="90">
     </td>
   </tr>
   <tr>

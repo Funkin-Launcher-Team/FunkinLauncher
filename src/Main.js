@@ -18,6 +18,7 @@
 
 const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell, Notification } = require('electron');
 const { exec } = require('child_process');
+const { Tray, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const chalk = require('chalk');
@@ -59,7 +60,9 @@ if (!fs.existsSync(path.join(appDataPath, 'logs'))) {
     fs.mkdirSync(path.join(appDataPath, 'logs'), { recursive: true });
 }
 
-var logStream = fs.createWriteStream(path.join(appDataPath, 'logs', formattedDate() + '.log'), { flags: 'w' });
+const startDate = formattedDate();
+
+var logStream = fs.createWriteStream(path.join(appDataPath, 'logs', startDate + '.log'), { flags: 'w' });
 
 
 // Window configuration
@@ -291,8 +294,9 @@ app.whenReady().then(() => {
     });
 });
 
+
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin' && !konamiClosed) app.quit();
+    app.quit();
 });
 
 function downloadAndUpdate(selectedPath, remoteVersion, downloadURL) {

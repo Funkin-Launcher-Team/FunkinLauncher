@@ -13,21 +13,40 @@ window.state = 'SelectGame';
 
 // var isGameCloseEventGonnaFireAndTalkAbotuImportedEngine = false;
 
+fetch('../package.json').then(response => response.json()).then(data => {
+    if (data.isAlpha) {
+        document.getElementById('alpha').style.display = 'block';
+    }
+    else {
+        document.getElementById('alpha').style.display = 'none';
+    }
+});
+
+var isSettingsOpen = false;
+
+function shellOpen(url) {
+    window.electronAPI.openURL(url);
+}
+
 function onCloseSettings() {
-    window.state = 'SelectGame';
-    var ca = new Audio('cancel.mp3');
-    ca.volume = 0.5;
-    bgm.volume = localStorage.getItem('volume');
-    ca.play();
+        isSettingsOpen = false;
+        window.state = 'SelectGame';
+        var ca = new Audio('cancel.mp3');
+        ca.volume = 0.5;
+        bgm.volume = localStorage.getItem('volume');
+        ca.play();
 }
 
 function openSettings() {
-    var ca = new Audio('confirm.mp3');
-    window.state = 'Settings';
-    ca.volume = 0.5;
-    ca.play();
-    bgm.volume = 0;
-    window.electronAPI.settings();
+    if (!isSettingsOpen) {
+        isSettingsOpen = true;
+        var ca = new Audio('confirm.mp3');
+        window.state = 'Settings';
+        ca.volume = 0.5;
+        ca.play();
+        bgm.volume = 0;
+        window.electronAPI.settings();
+    }
 }
 
 function loadEngine() {

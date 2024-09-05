@@ -7,6 +7,36 @@ a {
     color: white;
 }
 
+.cpfp {
+    border-radius: 2px;
+    filter: blur(0.5px);
+    transition: 0.1s filter, 0.1s scale;
+}
+
+.cpfp:hover {
+    filter: blur(0px);
+    scale: 1.1;
+}
+
+@keyframes confidentialAlert {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.confidential {
+    padding: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 2px;
+    animation: 5s confidentialAlert infinite;
+}
+
 .noSelect {
     -webkit-user-select: none; /* Safari */        
     -moz-user-select: none; /* Firefox */
@@ -112,7 +142,7 @@ h1 {
 
 .licenseContents {
     color: white;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 15px;
 }
 
@@ -159,7 +189,8 @@ h1 {
     border-radius: 2px;
     border: black;
     font-family: 'Montserrat', sans-serif;
-    transition: 0.3s scale;
+    background-color: white;
+    transition: 0.3s scale, 0.3 background-color;
 }
 .ver {
     position: fixed;
@@ -175,9 +206,9 @@ h1 {
     right: 20px;
 }
 .btn:hover {
-    scale: 1.05;
-    background: linear-gradient(to bottom, rgb(116, 116, 116), rgb(59, 59, 59));
-    color: white;
+    scale: 1.1;
+    background-color: rgb(240,240,240);
+    color: rgb(0, 0, 0);
     cursor: pointer;
 }
 /*

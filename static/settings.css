@@ -15,7 +15,7 @@ button.erb {
 a { color: white; }
 
 body {
-    background-image: url("./stageback.png");
+    background-color: rgb(28, 20, 29);
     margin: 0;
     font-family: "Segoe UI";
     padding: 0px;
@@ -160,6 +160,7 @@ td, th {
 
 .install {
     background-color: black;
+    border: 1px solid black;
     opacity: 0.8;
     margin-right: 15px;
     padding-right: 15px;
@@ -168,6 +169,12 @@ td, th {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: 0.2s opacity, 0.2s border;
+}
+
+.install:hover {
+    opacity: 1;
+    border: 1px solid white;
 }
 
 .prototype {

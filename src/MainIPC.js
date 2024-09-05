@@ -47,6 +47,9 @@ ipcMain.on('log', (event, message) => {
     logStream.write('(RENDERER PROCESS) ' + message + '\n');
     process.stdout.write('(RENDERER PROCESS) ' + message + '\n');
 });
+ipcMain.on('open-url', (event, url) => {
+    require('electron').shell.openExternal(url);
+});
 
 function randomNumber(min,max) {
     return Math.floor(Math.random()*(max-min+1)+min);
@@ -101,7 +104,7 @@ ipcMain.on('open-engine-folder', (event) => {
 });
 
 ipcMain.on('open-logs-folder', (event) => {
-    exec('explorer.exe ' + path.join(appDataPath, 'logs'), (err, stdout, stderr) => {});
+    exec('notepad.exe ' + path.join(appDataPath, 'logs', startDate + '.log'), (err, stdout, stderr) => {});
 });
 
 ipcMain.on('remove-engine', (event, engineID, removeFiles) => {
@@ -135,7 +138,12 @@ ipcMain.on('load-game', (event, engineID) => {
     });
 });
 
+var openSettingsWin = 0;
 ipcMain.on('open-settings', (event) => {
+    openSettingsWin++;
+    if (openSettingsWin > 1) {
+        return;
+    }
     sw = new BrowserWindow({
         parent: win,
         modal: true,
@@ -156,6 +164,7 @@ ipcMain.on('open-settings', (event) => {
         passToSettings();
     });
     sw.on('closed', () => {
+        openSettingsWin--;
         win.webContents.executeJavaScript('onCloseSettings();');
     });
 });

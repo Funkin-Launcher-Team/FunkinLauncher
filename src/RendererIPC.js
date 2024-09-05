@@ -18,4 +18,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   removeMod: (mod, engine) => ipcRenderer.send('remove-mod', mod, engine),
   randomizeWindow: () => ipcRenderer.send('randomize-window'),
   konamiWinClose: () => ipcRenderer.send('konami-win-close'),
+  openURL: (url) => ipcRenderer.send('open-url', url),
 })

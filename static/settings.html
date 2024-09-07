@@ -63,8 +63,35 @@
         <button onclick="window.electronAPI.openLogsFolder()">Open current .log file</button>
         <br>
         <br>
+        <div class="dbfileHand">
+            <h2>Edit dbfile manually</h2>
+            <div class="warning" style="display: flex; justify-content: left; align-items: center; height: 10px;">
+                <img src="./warning.svg" alt="" width="20" height="20">
+                <p style="margin-left: 10px;">Only do this if you know what you're doing. Erroneous syntax will crash the launcher.</p>
+            </div>
+            <br>
+            <br>
+            <div id="dbfileEditor" style="height: 150px; width: 70%; border: 3px solid black;">
+            </div>
+            <br>
+            <button onclick="window.electronAPI.saveDBFile(editor.getValue())">Save</button>
+            <br>
+            <br>
+        </div>
     </div>
 </body>
+
+<script src="js/ace/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    function onDBFileDeliver(data) {
+        editor.session.setMode("ace/mode/json");
+        var js = ace.createEditSession(atob(data));
+        editor.setSession(js);
+    }
+    var editor = ace.edit("dbfileEditor");
+    editor.setTheme("ace/theme/chrome");
+    window.electronAPI.sendDBFile();
+</script>
 
 <script src="js/camerawork.js"></script>
 <script src="settings.js"></script>

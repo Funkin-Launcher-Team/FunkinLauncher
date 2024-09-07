@@ -1,6 +1,7 @@
 // We do not define anything since this file is evaluated when IPCs are defined.
 // Maybe evaluation isn't the best approach, though.
 
+const { ipcMain } = require("electron");
 const { extract } = require("zip-lib");
 
 // construct buttons
@@ -8,6 +9,17 @@ function immb(modName, engineID, shownName) {
     return '<button onclick ="removeMod(\'' + modName + '\', \'' + engineID + '\', \'' + shownName + '\')">Remove</button>';
 }
 
+ipcMain.on('send-db-file', (event) => {
+    var win = BrowserWindow.fromWebContents(event.sender);
+    const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher');
+    win.webContents.executeJavaScript('onDBFileDeliver("' + btoa(fs.readFileSync(path.join(appDataPath, 'dbfile.json'))) + '");');
+});
+ipcMain.on('save-db-file', (event, db) => {
+    var win = BrowserWindow.fromWebContents(event.sender);
+    const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher');
+    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), Buffer.from(db, 'base64'));
+    win.webContents.executeJavaScript('window.alert("All done!");');
+});
 function passToSettings() {
     sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
 

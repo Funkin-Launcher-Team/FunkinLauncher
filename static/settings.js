@@ -2,6 +2,7 @@ console.log = function (...args) {
     window.electronAPI.log(args.join(' '));
 }
 
+var audio = new Audio('./settings.ogg');
 var onHellYeah = function(){};
 var onNope = function(){};
 function btngen(element, div) {
@@ -23,6 +24,7 @@ window.onbeforeunload = function() {
 
 function done() {
     window.alert('The engine has been removed successfully.');
+    localStorage.setItem('curMusTime', audio.currentTime);
     window.location.reload();
 }
 
@@ -178,7 +180,11 @@ setInterval(calculateFPS, 1000);
 
 */
 
-var audio = new Audio('./settings.ogg');
 audio.volume = 0.5;
 audio.loop = true;
 audio.play();
+
+if (!['unset','',null,undefined].includes(localStorage.getItem('curMusTime'))) {
+    audio.currentTime = localStorage.getItem('curMusTime');
+    localStorage.setItem('curMusTime', 'unset');
+}

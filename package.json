@@ -3,7 +3,7 @@
   "version": "1.6.1",
   "description": "An AIO engine manager for Friday Night Funkin'",
   "main": "src/Bootstrap.js",
-  "isAlpha": true,
+  "isAlpha": false,
   "scripts": {
     "test": "electron .",
     "pack": "electron-builder --dir",

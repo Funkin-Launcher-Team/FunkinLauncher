@@ -19,4 +19,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   randomizeWindow: () => ipcRenderer.send('randomize-window'),
   konamiWinClose: () => ipcRenderer.send('konami-win-close'),
   openURL: (url) => ipcRenderer.send('open-url', url),
+  sendDBFile: () => ipcRenderer.send('send-db-file'),
+  saveDBFile: (db) => ipcRenderer.send('save-db-file', db),
 })

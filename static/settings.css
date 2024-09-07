@@ -3,13 +3,8 @@
     src: url("./fnf.ttf");
 }
 
-button.erb {
-    width: 80px;
-    border-radius: 25px;
-    border: none;
-    background-color: red;
-    color: white;
-    font-family: "FNF";
+.erb {
+    border: none !important;
 }
 
 a { color: white; }

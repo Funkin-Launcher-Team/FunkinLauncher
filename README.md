@@ -62,5 +62,3 @@ Since this app is built with Electron, you will need to install <a href="https:/
 # License
 
 This work is licensed under CC BY-NC-SA 4.0. That means you may redistribute this work and modify it as long as you credit all of the developers of the launcher.
-
-The settings song however is copyrighted and is sole property of Kacaro.

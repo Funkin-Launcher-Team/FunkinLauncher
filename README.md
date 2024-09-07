@@ -44,7 +44,7 @@ An AIO tool for managing FNF installations.
 
 <br>
 
-Since this app is built on Electron, you will need to install <a href="https://nodejs.org/dist/v20.16.0/node-v20.16.0-x64.msi">Node.js</a> to run the app from source code. After that...
+Since this app is built with Electron, you will need to install <a href="https://nodejs.org/dist/v20.16.0/node-v20.16.0-x64.msi">Node.js</a> to run the app from source code. After that...
 
 1) Use ``npm install --global yarn`` to install Yarn.
 2) Use ``yarn install`` to install all dependencies required for the app to function.

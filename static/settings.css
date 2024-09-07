@@ -17,7 +17,7 @@ a { color: white; }
 body {
     background-color: rgb(28, 20, 29);
     margin: 0;
-    font-family: "Segoe UI";
+    font-family: "Montserrat";
     padding: 0px;
     overflow-x: hidden;
     color: white;
@@ -67,10 +67,10 @@ button.usb {
 button:not(.close) {
     background-color: rgb(0, 0, 0);
     color: white;
-    font-family: "Verdana";
+    font-family: "Montserrat";
     font-size: 14px;
     min-width: 30px;
-    border: none;
+    border: 1px solid white;
     border-radius: 2px;
     padding: 10px;
     transition: background-color 0.3s, color 0.3s;

@@ -38,8 +38,35 @@ const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath }
 
 
 // TODO: this function just acts as bridge but we need a firewall
-function request(url, callback) {
+function fastRequest(url, callback) {
     return require('request')(url, callback);
+}
+function request(url, callback) {
+    var res;
+
+    try {
+        require('request')(url, (err, response, body) => {
+            if (err) {
+                if (dbReadValue('cache_res_' + btoa(url))) {
+                    console.log('Using cached response for ' + url);
+                    res = atob(dbReadValue('cache_res_' + btoa(url)));
+                    callback(err, response, res);
+                    return;
+                }
+                else {
+                    console.error(err);
+                    callback(err, response, body);
+                    return;
+                }
+            }
+            res = body;
+            dbWriteValue('cache_res_' + btoa(url), btoa(body));
+            callback(err, response, body);
+        });
+    }
+    catch (err) {
+        console.error(err);
+    }
 }
 
 
@@ -213,7 +240,7 @@ function downloadEngine(engineID) {
 
         var startTime = Date.now();
 
-        progress(request(downloadURL))
+        progress(fastRequest(downloadURL))
             .on('progress', (state) => {
                 console.log('percent: ' + Math.round(state.percent * 100) + '%');
                 win.webContents.executeJavaScript('updateProgress(' + Math.round(state.percent * 100) + ');');
@@ -304,7 +331,7 @@ function downloadAndUpdate(selectedPath, remoteVersion, downloadURL) {
 
         console.log(`Downloading update from ${downloadURL} to ${zipPath}`);
 
-        progress(request(downloadURL))
+        progress(fastRequest(downloadURL))
             .on('progress', (state) => {
                 console.log(`Download progress: ${Math.round(state.percent * 100)}%`);
             })

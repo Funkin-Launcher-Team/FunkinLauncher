@@ -63,11 +63,12 @@
         <button onclick="window.electronAPI.openLogsFolder()">Open current .log file</button>
         <br>
         <br>
-        <div class="dbfileHand" style="display: none;">
+        <div class="dbfileHand">
             <h2>Edit dbfile manually</h2>
+            <br>
             <div class="warning" style="display: flex; justify-content: left; align-items: center; height: 10px;">
                 <img src="./warning.svg" alt="" width="20" height="20">
-                <p style="margin-left: 10px;">Only do this if you know what you're doing. Erroneous syntax will crash the launcher.</p>
+                <p style="margin-left: 10px;">Only do this if you know what you're doing. If this is corrupted the app will reset the database, <b>deleting all savedata of the launcher!</b></p>
             </div>
             <br>
             <br>

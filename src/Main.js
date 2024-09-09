@@ -1,26 +1,8 @@
-/*
- * FNF Launcher
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, 
- * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software 
- * is furnished to do so, subject to the following conditions:
- * 
- * 1) The software is not republished in any form, modified or unmodified, without the explicit permission of the original author.
- * 2) The software is not used for any commercial purposes, including but not limited to selling the software, selling services that use the software, or selling the software as part of a service.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- * UNDER NO CIRCUMSTANCES SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH 
- * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
- * Tool published under the CC license (see README).
- * https://gamebanana.com/tools/17526
-*/
-
-
-const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell, Notification } = require('electron');
 const { exec } = require('child_process');
+const fs = require('fs');
+const { app, BrowserWindow, ipcMain, net, protocol, dialog, webContents, webFrame, shell, Notification } = require('electron');
 const { Tray, Menu } = require('electron');
 const path = require('path');
-const fs = require('fs');
 const chalk = require('chalk');
 const progress = require('request-progress');
 const URL = require('lite-url');
@@ -28,6 +10,7 @@ const { extractor, createExtractorFromFile } = require('node-unrar-js');
 const zl = require("zip-lib");
 const zipLib = require("zip-lib");
 const unrar = require("unrar");
+const beautify = require("json-beautify");
 const seven = require('node-7z');
 const express = require('express');
 const e = require('express');
@@ -36,7 +19,9 @@ const { title } = require('process');
 const { pathToFileURL } = require('url');
 const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath } = require('./Database');
 
-
+if (!fs.existsSync(path.join(appDataPath, 'errors'))) {
+    fs.mkdirSync(path.join(appDataPath, 'errors'), { recursive: true });
+}
 // TODO: this function just acts as bridge but we need a firewall
 function fastRequest(url, callback) {
     return require('request')(url, callback);
@@ -81,15 +66,7 @@ function formattedDate() {
     var date = new Date(Date.now());
     return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '-' + date.getHours() + '-' + date.getMinutes() + '-logs';
 }
-  
-// Print console to logs too
-if (!fs.existsSync(path.join(appDataPath, 'logs'))) {
-    fs.mkdirSync(path.join(appDataPath, 'logs'), { recursive: true });
-}
 
-const startDate = formattedDate();
-
-var logStream = fs.createWriteStream(path.join(appDataPath, 'logs', startDate + '.log'), { flags: 'w' });
 
 
 // Window configuration
@@ -281,14 +258,22 @@ function downloadEngine(engineID) {
 
 
 
-app.whenReady().then(() => {
+function initapp() {
+    if (dbReadValue('corrupted') == 'true' || dbReadValue('corrupted') == true) {
+        dialog.showMessageBox({
+            title: 'Corrupted database',
+            message: 'The database file was corrupted and has been reset.',
+            buttons: ['OK']
+        }).then(initapp);
+        dbDeleteValue('corrupted');
+        return;
+    }
     request('https://ffm-backend.web.app/version.json', (err, res, body) => {
         if (err) {
             console.error("Failed to fetch the version data:", err);
             createWindow();
             return;
         }
-        // intCV and AV or whatever the fuck that was hurted my brain
         const remoteVersion = JSON.parse(body).version;
         const currentVersion = require('../package.json').version;
 
@@ -319,7 +304,11 @@ app.whenReady().then(() => {
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-});
+}
+
+
+
+app.whenReady().then(initapp);
 
 
 app.on('window-all-closed', function () {

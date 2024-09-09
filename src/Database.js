@@ -5,28 +5,53 @@ const { app } = require('electron')
 // Create AppData folder
 const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher')
 
+function dbDeleteAll() {
+    fs.rmSync(path.join(appDataPath, 'dbfile.json'));
+    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'),jsonSafeStringify({"version": "1", "corrupted": true}));
+}
+
+function jsonSafeStringify(obj) {
+    try {
+        return JSON.stringify(obj);
+    }
+    catch (e) {
+        dbDeleteAll();
+        return JSON.stringify({});
+    }
+}
+
+function jsonSafeParse(obj) {
+    try {
+        return JSON.parse(obj);
+    }
+    catch (e) {
+        dbDeleteAll();
+        return {};
+    }
+}
+
 if (!fs.existsSync(appDataPath)) {
     fs.mkdirSync(appDataPath, { recursive: true });
 }
 
 // Create database if not existing
 if (!fs.existsSync(path.join(appDataPath, 'dbfile.json'))) {
-    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'),JSON.stringify({"version": "1"}));
+    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'),jsonSafeStringify({"version": "1"}));
 }
 
 async function dbWriteValue(key, value) {
-    var db = JSON.parse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
+    var db = jsonSafeParse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
     db[key] = value;
-    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), JSON.stringify(db));
+    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), jsonSafeStringify(db));
 }
 
 function dbReadValue(key) {
-    var db = JSON.parse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
+    var db = jsonSafeParse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
     return db[key];
 }
 
 function dbGetAllEngines() {
-    var db = JSON.parse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
+    var db = jsonSafeParse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
     var engines = [];
     for (var key in db) {
         if (key.startsWith('engine') && key.startsWith('engineSrc') == false) {
@@ -45,9 +70,9 @@ function dbGetAllEngines() {
 }
 
 function dbDeleteValue(key) {
-    var db = JSON.parse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
+    var db = jsonSafeParse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'), 'utf8'));
     delete db[key];
-    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), JSON.stringify(db));
+    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), jsonSafeStringify(db));
 }
 
 if (dbReadValue('engineSrc') == null || dbReadValue('engineSrc') == undefined) {
@@ -59,5 +84,6 @@ module.exports = {
     dbReadValue: dbReadValue,
     dbGetAllEngines: dbGetAllEngines,
     dbDeleteValue: dbDeleteValue,
+    dbDeleteAll: dbDeleteAll,
     appDataPath: appDataPath
 };

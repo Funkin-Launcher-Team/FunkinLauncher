@@ -45,6 +45,7 @@
     "express": "^4.19.2",
     "file-type": "^19.4.0",
     "fs-move": "^6.0.0",
+    "json-beautify": "^1.1.1",
     "lite-url": "^1.0.5",
     "node-7z": "^3.0.0",
     "node-unrar-js": "^2.0.2",

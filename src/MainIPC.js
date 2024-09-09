@@ -1,7 +1,7 @@
 // We do not define anything since this file is evaluated when IPCs are defined.
 // Maybe evaluation isn't the best approach, though.
 
-const { ipcMain } = require("electron");
+const { ipcMain, dialog } = require("electron");
 const { extract } = require("zip-lib");
 
 // construct buttons
@@ -12,13 +12,18 @@ function immb(modName, engineID, shownName) {
 ipcMain.on('send-db-file', (event) => {
     var win = BrowserWindow.fromWebContents(event.sender);
     const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher');
-    win.webContents.executeJavaScript('onDBFileDeliver("' + btoa(fs.readFileSync(path.join(appDataPath, 'dbfile.json'))) + '");');
+    win.webContents.executeJavaScript('onDBFileDeliver("' + btoa(beautify(JSON.parse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'))), null, 2, 100)) + '");');
 });
 ipcMain.on('save-db-file', (event, db) => {
     var win = BrowserWindow.fromWebContents(event.sender);
     const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher');
-    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), Buffer.from(db, 'base64'));
-    win.webContents.executeJavaScript('window.alert("All done!");');
+    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), db);
+    dialog.showMessageBox({
+        message: 'Saved database file successfully! The app will now restart to apply the changes.'
+    }).then(() => {
+        app.relaunch();
+        app.quit();
+    });
 });
 function passToSettings() {
     sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');

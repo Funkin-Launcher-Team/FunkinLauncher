@@ -62,7 +62,7 @@ function loadEngine() {
 
 function versionPass(data) {
     document.getElementById('version').innerText = "v." + data + ' - ';
-    document.getElementById('version').innerHTML += '<a href="javascript:license()">Credits</a>';
+    document.getElementById('version').innerHTML += '<a href="javascript:license()">Credits</a> - <a href="javascript:shellOpen(\'https://discord.gg/YaN6y2pp7N\')">Discord</a>';
 }
 
 function license() {

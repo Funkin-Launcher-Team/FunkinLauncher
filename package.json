@@ -1,6 +1,6 @@
 {
   "name": "funkin-launcher",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "An AIO engine manager for Friday Night Funkin'",
   "main": "src/Bootstrap.js",
   "isAlpha": false,

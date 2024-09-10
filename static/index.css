@@ -7,6 +7,26 @@ a {
     color: white;
 }
 
+.closeBtn {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 40px;
+    font-size: 20px;
+    color: white;
+    font-family: "FNF";
+    border: 1px solid transparent;
+    background-color: rgba(0,0,0,0);
+    transition: 0.3s background-color;
+    z-index: 1000000;
+}
+
+.closeBtn:hover {
+    background-color: rgba(255, 0, 0, 1);
+    cursor: pointer;
+}
+
 .cpfp {
     border-radius: 2px;
     filter: blur(0.5px);
@@ -82,7 +102,7 @@ a {
 }
 
 .titlebar {
-    width: 100%;
+    width: 97.5vw;
     top: 0;
     left: 0;
     background-color: rgba(0,0,0,0);
@@ -127,6 +147,7 @@ h1 {
     color: white;
     margin-bottom: 2px;
 }
+
 .license {
     position: fixed;
     top: -20;
@@ -142,6 +163,7 @@ h1 {
     background-color: black;
     opacity: 0.8;
     transition: 0.7s opacity;
+    animation: onLicenseOpen 0.8s cubic-bezier(0.83, 0, 0.17, 1) 0s 1 forwards;
 }
 
 .licenseContents {
@@ -165,6 +187,7 @@ h1 {
 .settingsBtn {
     width: 43px;
     height: 45px;
+    background-color: rgba(0, 0, 0, 0);
     border: none;
     border-radius: 45px;
     display: flex;
@@ -173,11 +196,12 @@ h1 {
     border: 1px solid black;
     padding: 5px;
     padding-top: 6px;
-    transition: 0.5s width;
+    transition: width 0.7s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.7s;
     overflow: hidden;
 }
 .settingsBtn:hover {
-    width: 145px;
+    width: 135px;
+    background-color: rgba(255,255,255,0.3);
     cursor: pointer;
 }
 

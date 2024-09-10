@@ -15,15 +15,25 @@ ipcMain.on('send-db-file', (event) => {
     win.webContents.executeJavaScript('onDBFileDeliver("' + btoa(beautify(JSON.parse(fs.readFileSync(path.join(appDataPath, 'dbfile.json'))), null, 2, 100)) + '");');
 });
 ipcMain.on('save-db-file', (event, db) => {
-    var win = BrowserWindow.fromWebContents(event.sender);
-    const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher');
-    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), db);
-    dialog.showMessageBox({
-        message: 'Saved database file successfully! The app will now restart to apply the changes.'
-    }).then(() => {
-        app.relaunch();
-        app.quit();
-    });
+    try {
+        var a = JSON.parse(db);
+        var win = BrowserWindow.fromWebContents(event.sender);
+        const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher');
+        fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), db);
+        dialog.showMessageBox({
+            message: 'Saved database file successfully! The app will now restart to apply the changes.'
+        }).then(() => {
+            app.relaunch();
+            app.quit();
+        });
+    }
+    catch (e) {
+        dialog.showMessageBox({
+            message: 'The database file is invalid. Please make sure it is a valid JSON file.\n\n' + e
+        }).then(() => {
+            return;
+        });
+    }
 });
 function passToSettings() {
     sw.webContents.executeJavaScript('passData("' + dbGetAllEngines() + '");');
@@ -107,6 +117,12 @@ ipcMain.on('import-engine', (event, engineID) => {
         }
         console.log('importing engine from ' + src);
         dbWriteValue('engine' + engineID, src);
+        var c = fs.readdirSync(src);
+        c.forEach((element) => {
+            if (element.split('.')[element.split('.').length - 1] == 'exe') {
+                fs.renameSync(path.join(src, element), path.join(src, ejson.execName[engineID] + '.exe'));
+            }
+        });
         eventer.webContents.executeJavaScript('window.alert(\'Imported engine successfully!\');onGameClose();');
     });
 });

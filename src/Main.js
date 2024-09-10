@@ -26,6 +26,7 @@ if (!fs.existsSync(path.join(appDataPath, 'errors'))) {
 function fastRequest(url, callback) {
     return require('request')(url, callback);
 }
+var ejson = {};
 function request(url, callback) {
     var res;
 
@@ -45,7 +46,9 @@ function request(url, callback) {
                 }
             }
             res = body;
-            dbWriteValue('cache_res_' + btoa(url), btoa(body));
+            if (!dbReadValue('cache_res_' + btoa(url))) {
+                dbWriteValue('cache_res_' + btoa(url), btoa(body));
+            }
             callback(err, response, body);
         });
     }
@@ -80,12 +83,7 @@ var launcherWindow = {
     resizable: false,
     fullscreen: false,
     fullscreenable: false,
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-        color: 'rgba(0,0,0,0)',
-        symbolColor: '#000000',
-        height: 50
-    },
+    frame: false,
     webPreferences: {
         nodeIntegration: true,
         preload: path.join(__dirname, 'RendererIPC.js')
@@ -118,6 +116,7 @@ request('https://' + dbReadValue('engineSrc') + '/engines.json', (err, res, body
     var json = JSON.parse(body);
     execName = json.execName;
     formalName = json.formalName;
+    ejson = json;
 });
 
 

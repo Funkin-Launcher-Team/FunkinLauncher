@@ -32,8 +32,8 @@
         <br>
         <br>
         <h2>UI Settings</h2>
+        <h4>Volume</h4>
         <div class="volume">
-            <p style="width: 200px;">BGM volume:</p>
             <input type="range" min="0" max="100" value="50" name="volume" class="slider" id="volSlider">
         </div>
         <br>
@@ -56,11 +56,9 @@
         <button onclick="document.getElementById('bh').value = 'ffm-backend.web.app'">Reset to official host</button>
         <br>
         <br>
-        <h2>Miscellaneous settings</h2>
+        <h2>Other</h2>
         <button onclick="window.electronAPI.openEngineFolder()">Open "engines" folder</button>
-        <br>
-        <br>
-        <button onclick="window.electronAPI.openLogsFolder()">Open current .log file</button>
+        <p>If you used Funkin Launcher before 1.5.1, you can move the engines in the FL folder back to their original position and then reimport them.</p>
         <br>
         <br>
         <div class="dbfileHand">
@@ -68,7 +66,7 @@
             <br>
             <div class="warning" style="display: flex; justify-content: left; align-items: center; height: 10px;">
                 <img src="./warning.svg" alt="" width="20" height="20">
-                <p style="margin-left: 10px;">Only do this if you know what you're doing. If this is corrupted the app will reset the database, <b>deleting all savedata of the launcher!</b></p>
+                <p style="margin-left: 10px;">Editing <b>dbfile</b> directly is not reccomended.</p>
             </div>
             <br>
             <br>

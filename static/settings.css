@@ -90,7 +90,7 @@ button:active {
     }
 }
 
-input {
+input:not([type="checkbox"]) {
     background-color: #514053;
     color: white;
     width: 95%;
@@ -198,7 +198,9 @@ input[type="range"]::-webkit-slider-thumb {
 
 .volume {
     width: 45%;
+    padding: 0;
     display: flex;
+    transform: translateX(-9px);
     justify-content: left;
     align-items: center;
 }

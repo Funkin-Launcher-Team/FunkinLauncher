@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>error page</title>
+</head>
+<body>
+    <div class="cc">
+        <h1>error</h1>
+    </div>
+    <button class="closeBtn" id="clbt" onclick="window.close()">X</button>
+</body>
+<script>
+    var a = new Audio("daErrorSong.mp3");
+    a.volume = 0.5;
+    a.loop = true;
+    a.play();
+</script>
+<style>
+    @font-face {
+        font-family: "FNF";
+        src: url("./fnf.ttf");
+    }
+    body {
+        background-color: black;
+        color: white;
+        overflow: hidden;
+        font-family: 'Arial';
+    }
+    .cc {
+        width: 100vw;
+        height: 95vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .closeBtn {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 30px;
+        height: 40px;
+        font-size: 20px;
+        color: white;
+        font-family: "FNF";
+        border: 1px solid transparent;
+        background-color: rgba(0,0,0,0);
+        transition: 0.3s background-color;
+        z-index: 1000000;
+    }
+
+    .closeBtn:hover {
+        background-color: rgba(255, 0, 0, 1);
+        cursor: pointer;
+    }
+</style>
+</html>

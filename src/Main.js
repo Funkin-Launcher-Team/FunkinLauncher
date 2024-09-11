@@ -17,7 +17,9 @@ const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
 const { pathToFileURL } = require('url');
-const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath } = require('./Database');
+const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath, hto } = require('./Database');
+
+var hasToError = hto;
 
 if (!fs.existsSync(path.join(appDataPath, 'errors'))) {
     fs.mkdirSync(path.join(appDataPath, 'errors'), { recursive: true });
@@ -182,10 +184,12 @@ function createWindow() {
     defineIPC();
 
     if (launchLauncher) {
-        win.loadURL(path.join(__dirname, '../', 'static', 'index.html'));
+        win.loadURL(path.join(__dirname, '../', 'static', (hasToError ? 'error.html' : 'index.html')));
         win.webContents.on('did-finish-load', () => {
-            win.webContents.executeJavaScript('versionPass("' + require('../package.json').version + (process.argv.includes('frombatch') ? '-BETA' : '') + '");');
-            win.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");');
+            if (!hasToError) {
+                win.webContents.executeJavaScript('versionPass("' + require('../package.json').version + (process.argv.includes('frombatch') ? '-BETA' : '') + '");');
+                win.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");');
+            }
         });
     }
 

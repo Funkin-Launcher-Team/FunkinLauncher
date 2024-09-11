@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { app } = require('electron')
 
+var hto = false;
+
 // Create AppData folder
 const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher')
 
@@ -15,7 +17,7 @@ function jsonSafeStringify(obj) {
         return JSON.stringify(obj);
     }
     catch (e) {
-        dbDeleteAll();
+        hto = true;
         return JSON.stringify({});
     }
 }
@@ -25,7 +27,7 @@ function jsonSafeParse(obj) {
         return JSON.parse(obj);
     }
     catch (e) {
-        dbDeleteAll();
+        hto = true;
         return {};
     }
 }
@@ -75,8 +77,13 @@ function dbDeleteValue(key) {
     fs.writeFileSync(path.join(appDataPath, 'dbfile.json'), jsonSafeStringify(db));
 }
 
-if (dbReadValue('engineSrc') == null || dbReadValue('engineSrc') == undefined) {
-    dbWriteValue('engineSrc', 'ffm-backend.web.app');
+try {
+    if (dbReadValue('engineSrc') == null || dbReadValue('engineSrc') == undefined) {
+        dbWriteValue('engineSrc', 'ffm-backend.web.app');
+    }
+}
+catch (e) {
+    hto = true;
 }
 
 module.exports = {
@@ -85,5 +92,6 @@ module.exports = {
     dbGetAllEngines: dbGetAllEngines,
     dbDeleteValue: dbDeleteValue,
     dbDeleteAll: dbDeleteAll,
-    appDataPath: appDataPath
+    appDataPath: appDataPath,
+    hto: hto
 };

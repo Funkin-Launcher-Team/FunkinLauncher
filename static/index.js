@@ -2,6 +2,20 @@ console.log = function (...args) {
     window.electronAPI.log(args.join(' '));
 }
 
+window.onunhandledrejection = event => {
+    window.location.href = 'error.html';
+};
+  
+window.onerror = function(message, source, lineNumber, colno, error) {
+    window.location.href = 'error.html';
+};
+
+window.onerror = function (message, source, lineno, colno, error) {
+    window.location.href = 'error.html';
+}
+console.error = function (...args) {
+    window.location.href = 'error.html';
+}
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 var targetProgress = 0;
 setInterval(function () {

@@ -2,6 +2,8 @@
 
 An AIO tool for managing FNF installations.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/1o2pi06d47mj44pe?svg=true)](https://ci.appveyor.com/project/toperri/funkinlauncher)
+
 # Credits
 
 <table style="width:90%">

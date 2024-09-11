@@ -269,3 +269,7 @@ function randomString(length) {
     }
     return result;
 }
+
+setInterval(function() {
+    document.getElementById('clbt').style.display = window.state != 'Download' ? 'block' : 'none';
+});

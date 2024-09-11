@@ -1,0 +1,22 @@
+# stole from kade's appveyor.yml
+version: "{build}"
+
+environment:
+  global:
+    # nothing 
+
+install:
+- winget install Schniz.fnm
+- fnm env --use-on-cd | Out-String | Invoke-Expression
+- fnm use --install-if-missing 20
+- npm i -g yarn
+- yarn install
+- yarn run build-win
+
+build_script:
+  # nothing lol
+
+artifacts:
+  - path: dist/win-unpacked/
+    name: FL-Build
+    type: zip

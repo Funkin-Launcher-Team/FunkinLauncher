@@ -3,18 +3,18 @@ console.log = function (...args) {
 }
 
 window.onunhandledrejection = event => {
-    window.location.href = 'error.html';
+    window.location.href = 'error.html?error=' + encodeURIComponent(btoa("Unknown Error"));
 };
   
 window.onerror = function(message, source, lineNumber, colno, error) {
-    window.location.href = 'error.html';
+    window.location.href = 'error.html?error=' + encodeURIComponent(btoa(message));
 };
 
 window.onerror = function (message, source, lineno, colno, error) {
-    window.location.href = 'error.html';
+    window.location.href = 'error.html?error=' + encodeURIComponent(btoa(message));
 }
 console.error = function (...args) {
-    window.location.href = 'error.html';
+    window.location.href = 'error.html?error=' + encodeURIComponent(btoa(args[0]));
 }
 const lerp = (x, y, a) => x * (1 - a) + y * a;
 var targetProgress = 0;

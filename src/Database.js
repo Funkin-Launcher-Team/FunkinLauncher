@@ -3,13 +3,13 @@ const path = require('path');
 const { app } = require('electron')
 
 var hto = false;
+var whto = "";
 
 // Create AppData folder
 const appDataPath = path.join(app.getPath('appData'), 'FNF Launcher')
 
 function dbDeleteAll() {
-    fs.rmSync(path.join(appDataPath, 'dbfile.json'));
-    fs.writeFileSync(path.join(appDataPath, 'dbfile.json'),jsonSafeStringify({"version": "1", "corrupted": true}));
+    //a
 }
 
 function jsonSafeStringify(obj) {
@@ -18,7 +18,8 @@ function jsonSafeStringify(obj) {
     }
     catch (e) {
         hto = true;
-        return JSON.stringify({});
+        whto = e;
+        return "";
     }
 }
 
@@ -28,6 +29,7 @@ function jsonSafeParse(obj) {
     }
     catch (e) {
         hto = true;
+        whto = e;
         return {};
     }
 }
@@ -84,6 +86,7 @@ try {
 }
 catch (e) {
     hto = true;
+    whto = "Corrupted dbfile.json";
 }
 
 module.exports = {
@@ -93,5 +96,6 @@ module.exports = {
     dbDeleteValue: dbDeleteValue,
     dbDeleteAll: dbDeleteAll,
     appDataPath: appDataPath,
-    hto: hto
+    hto: hto,
+    whto: whto
 };

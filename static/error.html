@@ -7,7 +7,10 @@
 </head>
 <body>
     <div class="cc">
-        <h1>error</h1>
+        <div class="test" style="text-align: center;">
+            <h1>OOOPS! AN ERROR OCCURRED...</h1>
+            <p id="errorCode" style="font-family: 'Arial';"></p>
+        </div>
     </div>
     <button class="closeBtn" id="clbt" onclick="window.close()">X</button>
 </body>
@@ -17,9 +20,12 @@
     }
     var a = new Audio("daErrorSong.mp3");
     a.volume = 0.5;
-    a.pitch = rand(0.9, 1.1);
+    a.mozPreservesPitch = false;
+    a.playbackRate = rand(0.9, 1.05);
     a.loop = true;
     a.play();
+
+    document.getElementById("errorCode").innerHTML = atob(new URLSearchParams(window.location.search).get("error"));
 </script>
 <style>
     @font-face {
@@ -30,7 +36,7 @@
         background-color: black;
         color: white;
         overflow: hidden;
-        font-family: 'Arial';
+        font-family: 'FNF';
     }
     .cc {
         width: 100vw;

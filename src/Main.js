@@ -17,9 +17,49 @@ const e = require('express');
 const move = require('fs-move');
 const { title } = require('process');
 const { pathToFileURL } = require('url');
-const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath, hto } = require('./Database');
+const { dbDeleteValue, dbGetAllEngines, dbReadValue, dbWriteValue, appDataPath, hto, whto } = require('./Database');
 
+var whyHTE = whto;
 var hasToError = hto;
+var isLoad = false;
+var appReady = false;
+
+function makeErrWin(err) {
+    if (appReady) {
+        // Close all windows
+        isLoad = true;
+        BrowserWindow.getAllWindows().forEach(win => {
+            win.close();
+        });
+
+        var errWin = new BrowserWindow({
+            width: 1280,
+            height: 720,
+            resizable: false,
+            fullscreen: false,
+            fullscreenable: false,
+            frame: false,
+            webPreferences: {
+                nodeIntegration: true,
+                preload: path.join(__dirname, 'RendererIPC.js')
+            }
+        });
+        errWin.loadURL(path.join(__dirname, '../', 'static', 'error.html') + "?error=" + btoa(err));
+
+        isLoad = false;
+    }
+    else {
+        app.whenReady().then(() => {
+            appReady = true;
+            makeErrWin();
+        });
+    }
+}
+
+process.on('uncaughtException', function (err) {
+    hasToError = true;
+    makeErrWin(err);
+});
 
 if (!fs.existsSync(path.join(appDataPath, 'errors'))) {
     fs.mkdirSync(path.join(appDataPath, 'errors'), { recursive: true });
@@ -162,6 +202,10 @@ function defineIPC() {
 
 
 function createWindow() {
+    if (hasToError) {
+        makeErrWin(whyHTE);
+        return;
+    }
     var launchLauncher = true;
     process.argv.forEach((val, index) => {
         if (val.startsWith('flmod://')) {
@@ -262,6 +306,7 @@ function downloadEngine(engineID) {
 
 
 function initapp() {
+    appReady = true;
     if (dbReadValue('corrupted') == 'true' || dbReadValue('corrupted') == true) {
         dialog.showMessageBox({
             title: 'Corrupted database',
@@ -315,7 +360,9 @@ app.whenReady().then(initapp);
 
 
 app.on('window-all-closed', function () {
-    app.quit();
+    if (!isLoad) {
+        app.quit();
+    }
 });
 
 function downloadAndUpdate(selectedPath, remoteVersion, downloadURL) {

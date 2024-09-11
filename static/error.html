@@ -12,8 +12,12 @@
     <button class="closeBtn" id="clbt" onclick="window.close()">X</button>
 </body>
 <script>
+    function rand(min,max) {
+        return Math.random() * (max - min) + min;
+    }
     var a = new Audio("daErrorSong.mp3");
     a.volume = 0.5;
+    a.pitch = rand(0.9, 1.1);
     a.loop = true;
     a.play();
 </script>

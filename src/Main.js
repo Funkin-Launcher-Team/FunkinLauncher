@@ -51,7 +51,7 @@ function makeErrWin(err) {
     else {
         app.whenReady().then(() => {
             appReady = true;
-            makeErrWin();
+            makeErrWin(err);
         });
     }
 }
@@ -215,7 +215,7 @@ function createWindow() {
             if (!isHealthy(url)) return;
             mmi.webContents.on('did-finish-load', () => {
                 mmi.webContents.executeJavaScript('receiveUrl("' + url.split('$')[0] + '", "' + url.split('$')[1] + '", "' + url.split('$')[2] + '");');
-                mmi.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");');
+                mmi.webContents.executeJavaScript('localStorage.setItem("engineSrc","' + dbReadValue('engineSrc') + '");localStorage.setItem("boots",(localStorage.getItem("boots") ? parseInt(localStorage.getItem("boots")) + 1 : 1));');
             });
             launchLauncher = false;
         }

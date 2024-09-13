@@ -71,7 +71,7 @@ function passToSettings() {
     return true;
 }
 ipcMain.on('log', (event, message) => {
-    logStream.write('(RENDERER PROCESS) ' + message + '\n');
+    //logStream.write('(RENDERER PROCESS) ' + message + '\n');
     process.stdout.write('(RENDERER PROCESS) ' + message + '\n');
 });
 ipcMain.on('open-url', (event, url) => {

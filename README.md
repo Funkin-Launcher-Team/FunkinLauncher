@@ -37,6 +37,8 @@ An AIO tool for managing FNF installations.
 
 "Fuzzfreak" composed by [Jukestar](https://jukestar.newgrounds.com/)
 
+Special thanks to our playtesters Herox and SikeAir!
+
 # How to run
 <br>
 

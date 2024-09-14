@@ -141,10 +141,34 @@ ipcMain.on('open-logs-folder', (event) => {
 });
 
 ipcMain.on('remove-engine', (event, engineID, removeFiles) => {
+    dialog.showMessageBox({
+        title: 'Remove Engine',
+        message: 'Are you sure you want to remove ' + formalName[engineID] + ' from Funkin Launcher?',
+        buttons: ['Yes', 'No'],
+        defaultId: 1
+    }).then((result) => {
+        if (result.response == 1) {
+            return;
+        }
+        dialog.showMessageBox({
+            title: 'Delete files',
+            message: 'Should we delete ' + formalName[engineID] + '\'s files as well? (Going in the Trash)',
+            buttons: ['Yes', 'No'],
+            defaultId: 1
+        }).then(() => {
+            if (removeFiles) {
+                fs.rmSync(dbReadValue('engine' + engineID), { recursive: true });
+            }
+            dbDeleteValue('engine' + engineID);
+            //win.webContents.executeJavaScript('done();');
+        });
+    });
+    /*
     if (removeFiles) {
         fs.rmSync(dbReadValue('engine' + engineID), { recursive: true });
     }
     dbDeleteValue('engine' + engineID);
+    */
 });
 
 ipcMain.on('load-game', (event, engineID) => {

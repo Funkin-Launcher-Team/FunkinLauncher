@@ -10,10 +10,8 @@ function btngen(element, div) {
     btn.innerHTML = '<b>Remove</b>';
     btn.className = 'erb';
     btn.onclick = function() {
-        if (window.confirm('Are you sure?')) {
-            window.electronAPI.removeEngine(element, window.confirm('Should the files be deleted too?'));
-            done();
-        }
+        window.electronAPI.removeEngine(element, false);
+        //done();
     }
     div.appendChild(btn);
 }

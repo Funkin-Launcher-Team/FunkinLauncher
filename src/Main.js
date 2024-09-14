@@ -279,8 +279,6 @@ function downloadEngine(engineID) {
 
                     console.log('Download complete. Extracting...');
                     await extractFile(downloadPath, extractPath);
-                    
-                    fs.rmSync(downloadPath, { recursive: true });
 
                     dbWriteValue(`engine${engineID}`, extractPath);
                     

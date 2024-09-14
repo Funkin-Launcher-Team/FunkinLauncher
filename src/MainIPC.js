@@ -155,8 +155,8 @@ ipcMain.on('remove-engine', (event, engineID, removeFiles) => {
             message: 'Should we delete ' + formalName[engineID] + '\'s files as well? (Going in the Trash)',
             buttons: ['Yes', 'No'],
             defaultId: 1
-        }).then(() => {
-            if (removeFiles) {
+        }).then((res) => {
+            if (result.response == 0) {
                 fs.rmSync(dbReadValue('engine' + engineID), { recursive: true });
             }
             dbDeleteValue('engine' + engineID);

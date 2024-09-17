@@ -69,35 +69,36 @@ function fastRequest(url, callback) {
     return require('request')(url, callback);
 }
 var ejson = {};
-function request(url, callback) {
-    var res;
-
-    try {
-        require('request')(url, (err, response, body) => {
-            if (err) {
-                if (dbReadValue('cache_res_' + btoa(url))) {
-                    console.log('Using cached response for ' + url);
-                    res = atob(dbReadValue('cache_res_' + btoa(url)));
-                    callback(err, response, res);
-                    return;
+function request(url) {
+    return new Promise((resolve, reject) => {
+        try {
+            require('request')(url, (err, response, body) => {
+                if (err) {
+                    if (dbReadValue('cache_res_' + btoa(url))) {
+                        console.log('Using cached response for ' + url);
+                        const res = atob(dbReadValue('cache_res_' + btoa(url)));
+                        resolve({ error: err, response, res });
+                        return;
+                    } else {
+                        console.error(err);
+                        reject({ error: err, response, body });
+                        return;
+                    }
                 }
-                else {
-                    console.error(err);
-                    callback(err, response, body);
-                    return;
+                
+                const res = body;
+                if (!dbReadValue('cache_res_' + btoa(url))) {
+                    dbWriteValue('cache_res_' + btoa(url), btoa(body));
                 }
-            }
-            res = body;
-            if (!dbReadValue('cache_res_' + btoa(url))) {
-                dbWriteValue('cache_res_' + btoa(url), btoa(body));
-            }
-            callback(err, response, body);
-        });
-    }
-    catch (err) {
-        console.error(err);
-    }
+                resolve({ error: null, response, body });
+            });
+        } catch (err) {
+            console.error(err);
+            reject(err);
+        }
+    });
 }
+
 
 
 function isHealthy(url) {

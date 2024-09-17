@@ -100,6 +100,25 @@ function request(url) {
 }
 
 
+app.whenReady().then(() => {
+    appReady = true;
+
+    // Open a new window
+    const websiteWindow = new BrowserWindow({
+        width: 800,
+        height: 600,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false // Adjust this how you need other devs
+        }
+    });
+
+    // Load the Link to Funkin' Launcher
+    websiteWindow.loadURL('https://gamebanana.com/tools/17526');
+
+});
+
+
 
 function isHealthy(url) {
     // TODO: sanitize url

@@ -1,5 +1,7 @@
+NOTICE:  This version of Funkin Launcher is no longer supported.
+
 # FunkinLauncher
-An AIO tool for managing FNF installations.
+An AIO tool for managing FNF installations.<br />
 [![Build status](https://ci.appveyor.com/api/projects/status/1o2pi06d47mj44pe?svg=true)](https://ci.appveyor.com/project/toperri/funkinlauncher)
 
 # Credits
@@ -31,7 +33,7 @@ An AIO tool for managing FNF installations.
     <td>Musician</td>
   </tr>
 </table>
-"Fuzzfreak" composed by ![Jukestar](https://jukestar.newgrounds.com/)
+"Fuzzfreak" composed by Jukestar (https://jukestar.newgrounds.com/)
 Special thanks to our playtesters Herox and SikeAir!
 
 # How to run
